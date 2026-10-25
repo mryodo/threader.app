@@ -9,10 +9,18 @@ struct ContentView: View {
       Sidebar().navigationSplitViewColumnWidth(min: 200, ideal: 230).toolbar(
         removing: .sidebarToggle)
     } detail: {
+
       VStack(spacing: 0) {
-        Text("123").padding()
-        //footer
+        ScrollView {
+          Text("123").padding()
+        }
+        Rectangle()
+          .foregroundColor(.clear)
+          .frame(height: 16)
+          .frame(maxWidth: .infinity)
+          .background(Color(red: 1, green: 0.78, blue: 0.17))
       }
+
     }
   }
 
@@ -24,7 +32,30 @@ struct Sidebar: View {
   @State private var selection: URL?
 
   var body: some View {
-    Text("1234").padding()
+    List {
+      Section {
+        List(folders, id: \.self, selection: $selection) { url in
+          Label(url.lastPathComponent, systemImage: "folder")
+        }
+        .task {
+          let urls =
+            (try? FileManager.default.contentsOfDirectory(
+              at: URL(filePath: rootPath),
+              includingPropertiesForKeys: [.isDirectoryKey],
+              options: .skipsHiddenFiles)) ?? []
+          folders = urls.filter {
+            (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+          }
+          .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        }
+      } header: {
+        Text("workspaces".uppercased())
+      }
+      Section {
+      } header: {
+        Text("tags".uppercased())
+      }
+    }
   }
 
 }
