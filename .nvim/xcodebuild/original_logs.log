@@ -1,7 +1,7 @@
 Command line invocation:
     /Applications/Xcode-beta.app/Contents/Developer/usr/bin/xcodebuild build -project /Users/mryodo/apps/tmp/tmp.xcodeproj -scheme tmp -destination id=00008142-0009511401F1401C -resultBundlePath /Users/mryodo/apps/tmp/.nvim/xcodebuild/build.xcresult -parallelizeTargets
 
-2026-10-25 21:04:42.207 xcodebuild[10627:6370465] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-26 19:42:55.405 xcodebuild[45074:377068] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
 Writing result bundle at path:
 	/Users/mryodo/apps/tmp/.nvim/xcodebuild/build.xcresult
 
@@ -24,45 +24,9 @@ GatherProvisioningInputs
 
 CreateBuildDescription
 
-ExecuteExternalTool /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
-
-ExecuteExternalTool /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -x c -c /dev/null
-
-ExecuteExternalTool /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
-
-Build description signature: 94f0b94e9ba5b9681e65aca307f01ac2
-Build description path: /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/XCBuildData/94f0b94e9ba5b9681e65aca307f01ac2.xcbuilddata
 ClangStatCache /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk /Users/mryodo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx27.0-26A5353p-45874285e5972fffeae925c4ab065928.sdkstatcache
     cd /Users/mryodo/apps/tmp/tmp.xcodeproj
     /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -o /Users/mryodo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx27.0-26A5353p-45874285e5972fffeae925c4ab065928.sdkstatcache
-
-WriteAuxiliaryFile /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftConstValuesFileList (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    write-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftConstValuesFileList
-
-WriteAuxiliaryFile /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftFileList (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    write-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftFileList
-
-WriteAuxiliaryFile /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.LinkFileList (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    write-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.LinkFileList
-
-WriteAuxiliaryFile /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp-OutputFileMap.json (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    write-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp-OutputFileMap.json
-
-MkDir /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Resources (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    /bin/mkdir -p /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Resources
-
-ProcessInfoPlistFile /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Info.plist /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/empty-tmp.plist (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    builtin-infoPlistUtility /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/empty-tmp.plist -producttype com.apple.product-type.application -genpkginfo /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Info.plist
-
-CpResource /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Resources/Model.swift_tmp /Users/mryodo/apps/tmp/tmp/Model.swift_tmp (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/mryodo/apps/tmp/tmp/Model.swift_tmp /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Resources
 
 SwiftDriver tmp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
@@ -80,31 +44,19 @@ SwiftCompile normal arm64 /Users/mryodo/apps/tmp/tmp/ContentView.swift (in targe
     cd /Users/mryodo/apps/tmp
     builtin-SwiftPerFileCompile ContentView.swift
 
-SwiftCompile normal arm64 Compiling\ App.swift /Users/mryodo/apps/tmp/tmp/App.swift (in target 'tmp' from project 'tmp')
-
-SwiftCompile normal arm64 /Users/mryodo/apps/tmp/tmp/App.swift (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    builtin-SwiftPerFileCompile App.swift
-
-SwiftDriverJobDiscovery normal arm64 Compiling App.swift (in target 'tmp' from project 'tmp')
-
 SwiftDriverJobDiscovery normal arm64 Emitting module for tmp (in target 'tmp' from project 'tmp')
 
 SwiftDriver\ Compilation\ Requirements tmp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
     builtin-Swift-Compilation-Requirements -- /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name tmp -Onone @/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftFileList -DDEBUG -default-isolation\=MainActor -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -target arm64-apple-macos27.0 -g -module-cache-path /Users/mryodo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug -F /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug -emit-localized-strings -emit-localized-strings-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64 -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mryodo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx27.0-26A5353p-45874285e5972fffeae925c4ab065928.sdkstatcache -output-file-map /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mryodo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mryodo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -emit-dependencies -emit-module -emit-module-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /Users/mryodo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp-generated-files.hmap -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp-own-target-headers.hmap -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp-project-headers.hmap -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/include -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/DerivedSources-normal/arm64 -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/DerivedSources/arm64 -Xcc -I/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp-Swift.h -working-directory /Users/mryodo/apps/tmp -experimental-emit-module-separately -disable-cmo
 
-Copy /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.abi.json /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.abi.json (in target 'tmp' from project 'tmp')
-    cd /Users/mryodo/apps/tmp
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.abi.json /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.abi.json
-
 Copy /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.swiftsourceinfo (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.swiftsourceinfo /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo
 
-Copy /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.swiftmodule /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.swiftmodule (in target 'tmp' from project 'tmp')
+Copy /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.abi.json /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.abi.json (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.swiftmodule /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.swiftmodule
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.abi.json /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.swiftmodule/arm64-apple-macos.abi.json
 
 SwiftDriverJobDiscovery normal arm64 Compiling ContentView.swift (in target 'tmp' from project 'tmp')
 
@@ -132,8 +84,8 @@ CopySwiftLibs /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucm
 ExtractAppIntentsMetadata (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
     /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name tmp --sdk-root /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk --xcode-version 27A5194q --platform-family macOS --deployment-target 27.0 --bundle-identifier devplaceholder.OCLIQWOP.tmp --output /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/Resources --target-triple arm64-apple-macos27.0 --binary-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/MacOS/tmp --dependency-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp_dependency_info.dat --stringsdata-file /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftFileList --metadata-file-list /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp.DependencyMetadataFileList --static-metadata-file-list /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/tmp.DependencyStaticMetadataFileList --swift-const-vals-list /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/tmp.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-10-25 21:04:43.282 appintentsmetadataprocessor[10689:6370680] Starting appintentsmetadataprocessor export
-2026-10-25 21:04:43.284 appintentsmetadataprocessor[10689:6370680] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+2026-10-26 19:42:56.199 appintentsmetadataprocessor[45105:377215] Starting appintentsmetadataprocessor export
+2026-10-26 19:42:56.200 appintentsmetadataprocessor[45105:377215] warning: Metadata extraction skipped, no AppIntents.framework dependency found
 
 CodeSign /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app/Contents/MacOS/tmp.debug.dylib (in target 'tmp' from project 'tmp')
     cd /Users/mryodo/apps/tmp
@@ -165,15 +117,9 @@ RegisterWithLaunchServices /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp
     cd /Users/mryodo/apps/tmp
     /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Products/Debug/tmp.app
 
-PruneExplicitPrecompiledModules /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
-
 PruneExplicitPrecompiledModules /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/ExplicitPrecompiledModules
 
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.o'
-
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.stringsdata'
-
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.swiftconstvalues'
+PruneExplicitPrecompiledModules /Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
 
 
 Result bundle written to path:

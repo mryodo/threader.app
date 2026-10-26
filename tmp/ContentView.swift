@@ -2,6 +2,22 @@ import Foundation
 import Playgrounds
 import SwiftUI
 
+struct MarkdownFileView: View {
+  let path: String
+
+  var body: some View {
+    let raw =
+      (try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8))
+      ?? "Could not read \(path)"
+    let md =
+      (try? AttributedString(
+        markdown: raw,
+        options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)))
+      ?? AttributedString(raw)
+    ScrollView { Text(md).textSelection(.enabled).padding() }
+  }
+}
+
 struct ContentView: View {
   var body: some View {
 
@@ -13,10 +29,11 @@ struct ContentView: View {
       VStack(spacing: 0) {
         ScrollView {
           Text("123").padding()
+          MarkdownFileView(path: "/Users/mryodo/Documents/notes/threads/test.md")
         }
         Rectangle()
           .foregroundColor(.clear)
-          .frame(height: 16)
+          .frame(height: 32)
           .frame(maxWidth: .infinity)
           .background(Color(red: 1, green: 0.78, blue: 0.17))
       }

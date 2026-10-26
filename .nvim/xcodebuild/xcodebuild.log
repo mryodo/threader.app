@@ -1,16 +1,8 @@
 note: Building targets in dependency order
 note: Target dependency graph (1 target)
-[tmp] Write Auxiliary File tmp.SwiftConstValuesFileList
-[tmp] Write Auxiliary File tmp.SwiftFileList
-[tmp] Write Auxiliary File tmp.LinkFileList
-[tmp] Write Auxiliary File tmp-OutputFileMap.json
-[tmp] Processing empty-tmp.plist
-[tmp] Copying Model.swift_tmp
 [tmp] Compiling ContentView.swift
-[tmp] Compiling App.swift
-[tmp] Copy arm64-apple-macos.abi.json -> tmp.abi.json
 [tmp] Copy arm64-apple-macos.swiftsourceinfo -> tmp.swiftsourceinfo
-[tmp] Copy arm64-apple-macos.swiftmodule -> tmp.swiftmodule
+[tmp] Copy arm64-apple-macos.abi.json -> tmp.abi.json
 [tmp] Linking tmp.debug.dylib
 note: Using stub executor library with Swift entry point. (in target 'tmp' from project 'tmp')
 [tmp] Linking tmp
@@ -19,9 +11,6 @@ Signing tmp.debug.dylib (in target 'tmp' from project 'tmp')
 Signing __preview.dylib (in target 'tmp' from project 'tmp')
 Signing tmp.app (in target 'tmp' from project 'tmp')
 [tmp] Validate tmp.app
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.o'
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.stringsdata'
-note: Removed stale file '/Users/mryodo/Library/Developer/Xcode/DerivedData/tmp-decjmaeigucmeyfkswshxnwjzlur/Build/Intermediates.noindex/tmp.build/Debug/tmp.build/Objects-normal/arm64/Model.swiftconstvalues'
 Build Succeeded
 
 -----------------------------
