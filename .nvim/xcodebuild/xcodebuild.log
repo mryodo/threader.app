@@ -1,16 +1,6 @@
 note: Building targets in dependency order
 note: Target dependency graph (1 target)
-[tmp] Compiling ContentView.swift
-[tmp] Copy arm64-apple-macos.swiftsourceinfo -> tmp.swiftsourceinfo
-[tmp] Copy arm64-apple-macos.abi.json -> tmp.abi.json
-[tmp] Linking tmp.debug.dylib
-note: Using stub executor library with Swift entry point. (in target 'tmp' from project 'tmp')
-[tmp] Linking tmp
-[tmp] Extract App Intents Metadata
-Signing tmp.debug.dylib (in target 'tmp' from project 'tmp')
-Signing __preview.dylib (in target 'tmp' from project 'tmp')
-Signing tmp.app (in target 'tmp' from project 'tmp')
-[tmp] Validate tmp.app
+[tmp] Processing empty-tmp.plist
 Build Succeeded
 
 -----------------------------
