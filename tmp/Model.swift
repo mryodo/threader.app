@@ -16,6 +16,11 @@ struct Thread: Identifiable {
   var id: URL { path }
 }
 
+struct Pos: Hashable {
+  var path: URL
+  var note: Int
+}
+
 let stampFormat = "yyyy-MM-dd HH:mm"
 
 func loadThread(_ path: String) -> Thread? {
@@ -30,24 +35,34 @@ func loadThread(_ path: String) -> Thread? {
     ?? .distantPast
   var current: [String] = []
 
-  func finishSection() {
-    let body = current.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
-    current = []
-    if thread.notes.isEmpty {
-      thread.card = body
-    } else {
-      thread.notes[thread.notes.count - 1].body = body
-    }
-  }
-
   for line in lines.dropFirst() {
     if line.hasPrefix("<!-- note "), line.hasSuffix(" -->") {
-      finishSection()
+      finishSection(&current, &thread)
       thread.notes.append(Note(timestamp: String(line.dropFirst(10).dropLast(4)), body: ""))
     } else {
       current.append(line)
     }
   }
-  finishSection()
+  finishSection(&current, &thread)
   return thread
+}
+
+func writeThread(_ t: Thread) -> String {
+  var s = "# \(t.title)\n"
+  if !t.card.isEmpty {
+    s += "\n\(t.card)\n"
+  }
+  for n in t.notes {
+    s += "\n<!-- note \(n.timestamp) -->\n"
+    if !n.body.isEmpty {
+      s += "\n\(n.body)\n"
+    }
+  }
+  return s
+}
+
+@Observable final class Store {
+  init() {
+
+  }
 }
