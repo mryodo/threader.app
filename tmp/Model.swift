@@ -69,6 +69,7 @@ func writeThread(_ t: Thread) -> String {
   var sel: Pos?
 
   var error: String?  // shown in the open sheet
+  var help = false
   var picking = false  // the workspace picker is open...
   var pickMove: URL?  // ...to move this thread rather than to switch
   var ask: Ask?  // the name being asked for in a sheet
@@ -78,7 +79,11 @@ func writeThread(_ t: Thread) -> String {
     case root
   }
   var showSidebar = true
+  var query = ""  // the search; "#tag" lists the posts with that tag
   var theme = "sw1comm"  // a Palette.themes name
+
+  @ObservationIgnored var undo: [(URL, String)] = []
+  @ObservationIgnored var redo: [(URL, String)] = []
 
   // BUG: this probably should be in cache or in one json or toml file
   static let stateFile = ".threader-workspace"
@@ -251,7 +256,7 @@ func writeThread(_ t: Thread) -> String {
     switch ask {
     case .thread:
       ask = nil
-    // newThread(name)
+      newThread(name)
     case .workspace(let moving):
       guard newWorkspace(name) else { return }
       ask = nil
@@ -297,12 +302,22 @@ func writeThread(_ t: Thread) -> String {
       self.error = error.localizedDescription
       return
     }
+    // so undo still finds the moved file
+    undo = undo.map { $0.0 == path ? (dst, $0.1) : $0 }
+    redo = redo.map { $0.0 == path ? (dst, $0.1) : $0 }
     reload()
+  }
+  /// Picks a theme, and tells the terminal app (which knows the same names).
+  func setTheme(_ name: String) {
+    theme = name
+    UserDefaults.standard.set(name, forKey: "theme")
+    try? (name + "\n").write(
+      to: root.appendingPathComponent(Store.themeFile), atomically: true, encoding: .utf8)
   }
   func setRoot(_ u: URL) {
     UserDefaults.standard.set(u.path, forKey: "root")
     // commit()
-    // query = ""
+    query = ""
     unfolded = []
     open(u)
   }
