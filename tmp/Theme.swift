@@ -204,7 +204,7 @@ struct Raised: ViewModifier {
   }
 }
 
-// extension Store {
-//     var p: Palette { Palette.themes.first { $0.name == theme }?.palette ?? .sw1comm }
-//     var light: Bool { Palette.themes.first { $0.name == theme }?.light ?? true }
-// }
+extension Store {
+  var p: Palette { Palette.themes.first { $0.name == theme }?.palette ?? .sw1comm }
+  var light: Bool { Palette.themes.first { $0.name == theme }?.light ?? true }
+}

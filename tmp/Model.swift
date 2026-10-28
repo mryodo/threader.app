@@ -68,6 +68,12 @@ func writeThread(_ t: Thread) -> String {
   var unfolded: Set<URL> = []
   var sel: Pos?
 
+  var ask: Ask?  // the name being asked for in a sheet
+  enum Ask: Equatable {
+    case thread
+    case workspace(moving: URL?)
+    case root
+  }
   var showSidebar = true
   var theme = "sw1comm"  // a Palette.themes name
 
@@ -236,5 +242,49 @@ func writeThread(_ t: Thread) -> String {
       last = ""
     }
     switchTo(last)
+  }
+  func answer(_ input: String) {
+    let name = input.trimmingCharacters(in: .whitespaces)
+    switch ask {
+    case .thread:
+      ask = nil
+    // newThread(name)
+    case .workspace(let moving):
+      guard newWorkspace(name) else { return }
+      ask = nil
+      if moving != nil {
+        // move(moving, to: name)
+      } else {
+        switchTo(name)
+      }
+    case .root:
+      guard !name.isEmpty else { return }
+      ask = nil
+      setRoot(URL(fileURLWithPath: (name as NSString).expandingTildeInPath))
+    case nil:
+      break
+    }
+  }
+
+  func newWorkspace(_ name: String) -> Bool {
+    let n = name.trimmingCharacters(in: .whitespaces)
+    guard !n.isEmpty, !n.hasPrefix("."), !n.contains("/"), !n.contains("\\") else {
+      // error = "workspace names can't be empty, start with a dot, or contain slashes"
+      return false
+    }
+    do {
+      try FileManager.default.createDirectory(
+        at: root.appendingPathComponent(n), withIntermediateDirectories: true)
+      return true
+    } catch {
+      return false
+    }
+  }
+  func setRoot(_ u: URL) {
+    UserDefaults.standard.set(u.path, forKey: "root")
+    // commit()
+    // query = ""
+    unfolded = []
+    open(u)
   }
 }
