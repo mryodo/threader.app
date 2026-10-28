@@ -128,6 +128,7 @@ func registerFonts() {
 let installed = Set(NSFontManager.shared.availableFontFamilies)
 
 var fontScale: CGFloat = 1
+var lineGap: CGFloat = 0.08  // extra space between lines, in ems
 var fontName = "Maple Mono"
 var regularFace: String?
 
@@ -146,6 +147,13 @@ func nsFont() -> NSFont {
     ?? NSFontManager.shared.font(
       withFamily: fontName, traits: [], weight: 5, size: 15 * fontScale)
     ?? .monospacedSystemFont(ofSize: 15 * fontScale, weight: .regular)
+}
+
+/// The editor's paragraph style, with the line spacing from settings.
+func linePara() -> NSParagraphStyle {
+  let ps = NSMutableParagraphStyle()
+  ps.lineSpacing = lineGap * 15 * fontScale
+  return ps
 }
 
 func font(_ family: String, _ size: CGFloat, _ w: Font.Weight) -> Font {

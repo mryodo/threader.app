@@ -133,6 +133,13 @@ func writeThread(_ t: Thread) -> String {
     }
   }
 
+  var lineSpacing = UserDefaults.standard.object(forKey: "lineSpacing") as? Double ?? 0.08 {
+    didSet {
+      lineGap = lineSpacing
+      UserDefaults.standard.set(lineSpacing, forKey: "lineSpacing")
+    }
+  }
+
   static var askRoot: Bool {
     ProcessInfo.processInfo.environment["THREADER_DIR"] == nil
       && UserDefaults.standard.string(forKey: "root") == nil
@@ -230,6 +237,7 @@ func writeThread(_ t: Thread) -> String {
       saved.map { URL(fileURLWithPath: $0) }
       ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("threads")
     fontScale = fontSize / 15
+    lineGap = lineSpacing
     fontName = fontFamily
     applyStyle()
     // Use the saved theme if it still exists, else the terminal app's.

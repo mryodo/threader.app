@@ -22,6 +22,8 @@ struct MarkdownView: View {
           }
           .padding(14).frame(maxWidth: .infinity)
           .background(RoundedRectangle(cornerRadius: 14).fill(p.mathBg))
+        } else if b.type == "CODE" {
+          codeBox(b.head, p) { Text(highlighted(b.body, p)) }
         } else if let type = b.type {
           let c = p.callout(type)
           VStack(alignment: .leading, spacing: 6) {
@@ -49,7 +51,7 @@ struct MarkdownView: View {
               case .image(let alt, let src): ImageRow(alt: alt, src: src, dir: dir, p: p)
               case .text:
                 StructuredText(
-                  markdown: inlineMath(linkify(hardBreaks(mathHeadroom(s.text)))), baseURL: dir,
+                  markdown: inlineMath(linkify(hardBreaks(s.text))), baseURL: dir,
                   syntaxExtensions: [.math]
                 )
                 .threaderMarkdown(p)
@@ -94,6 +96,18 @@ func splitCallouts(_ md: String) -> [(type: String?, head: String, body: String)
             + "$$"
         ))
       i += 1
+      continue
+    }
+    // Prism, Textual's highlighter, has no Julia, so we colour it ourselves
+    if !fence, t == "```julia" || t == "```jl" {
+      flush()
+      var src: [String] = []
+      while i + 1 < lines.count, !lines[i + 1].trimmingCharacters(in: .whitespaces).hasPrefix("```") {
+        i += 1
+        src.append(lines[i])
+      }
+      out.append(("CODE", "julia", src.joined(separator: "\n")))
+      i += 2  // past the closing fence
       continue
     }
     if t.hasPrefix("```") { fence.toggle() }
@@ -226,6 +240,9 @@ extension View {
       .textual.imageAttachmentLoader(
         MathChipLoader(ink: p.ink, bg: p.mathBg, size: 15 * fontScale * 1.2)
       )
+      .textual.lineSpacing(.fontScaled(lineGap))
+      .textual.paragraphStyle(Para())
+      .modifier(LinkCursor())
       .textual.headingStyle(Heading(p: p))
       .textual.unorderedListMarker(Bullet(p: p))
       .textual.orderedListMarker(Number(p: p))
@@ -254,14 +271,61 @@ struct Heading: StructuredText.HeadingStyle {
   func makeBody(configuration: Configuration) -> some View {
     let n = min(configuration.headingLevel, 6)
     let c = [p.accent, p.teal, p.amber, p.red, p.purple, p.yellow][n - 1]
-    let size = [20, 18, 17, 16, 15, 15][n - 1] as CGFloat
+    let size = [17, 16, 15, 15, 15, 15][n - 1] as CGFloat
     HStack(alignment: .firstTextBaseline, spacing: 8) {
       Image(systemName: "\(n).square.fill").font(face(size))
       configuration.label.font(display(size))
     }
-    .foregroundStyle(c).padding(.vertical, 5).padding(.horizontal, 10)
+    .foregroundStyle(c).padding(.vertical, 3).padding(.horizontal, 10)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(RoundedRectangle(cornerRadius: 10).fill(c.opacity(0.12))).padding(.top, 4)
+  }
+}
+
+// ponytail: Textual marks link runs with its internal LinkAttribute and only
+// shows a hand cursor with text selection on (which swallows our clicks), so
+// we find the type by its mangled name. If Textual renames it, no hand cursor.
+let linkAttribute = _typeByName("7Textual13LinkAttributeV") as? any TextAttribute.Type
+
+func isLink(_ run: Text.Layout.Run) -> Bool {
+  func has<A: TextAttribute>(_ a: A.Type) -> Bool { run[a] != nil }
+  return linkAttribute.map { has($0) } ?? false
+}
+
+/// A pointing hand over links.
+struct LinkCursor: ViewModifier {
+  @State var rects: [CGRect] = []
+  @State var pushed = false
+
+  func body(content: Content) -> some View {
+    content
+      .backgroundPreferenceValue(Text.LayoutKey.self) { layouts in
+        GeometryReader { g in
+          let r = layouts.flatMap { a in
+            let o = g[a.origin]
+            return a.layout.flatMap { $0 }.filter(isLink).map {
+              $0.typographicBounds.rect.offsetBy(dx: o.x, dy: o.y)
+            }
+          }
+          Color.clear.onChange(of: r, initial: true) { rects = r }
+        }
+      }
+      .onContinuousHover { phase in
+        var on = false
+        if case .active(let at) = phase { on = rects.contains { $0.contains(at) } }
+        if on, !pushed { NSCursor.pointingHand.push() }
+        if !on, pushed { NSCursor.pop() }
+        pushed = on
+      }
+  }
+}
+
+/// Textual's default paragraph, with the line spacing from settings.
+struct Para: StructuredText.ParagraphStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .textual.lineSpacing(.fontScaled(lineGap))
+      .textual.blockSpacing(.fontScaled(top: 0.8))
   }
 }
 
@@ -276,7 +340,7 @@ struct Bullet: StructuredText.UnorderedListMarker {
 struct Number: StructuredText.OrderedListMarker {
   let p: Palette
   func makeBody(configuration: Configuration) -> some View {
-    Text("\(configuration.ordinal)").font(face(15, .bold)).foregroundStyle(p.amber)
+    Text("\(configuration.ordinal).").font(face(15, .bold)).foregroundStyle(p.amber)
       .monospacedDigit()
   }
 }
@@ -301,13 +365,30 @@ struct Rule: StructuredText.ThematicBreakStyle {
 struct Code: StructuredText.CodeBlockStyle {
   let p: Palette
   func makeBody(configuration: Configuration) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      if let lang = configuration.languageHint, !lang.isEmpty {
-        Caps(text: lang, color: p.inkSoft)
-      }
-      ScrollView(.horizontal, showsIndicators: false) { configuration.label.font(face(14)) }
-    }
-    .padding(14).frame(maxWidth: .infinity, alignment: .leading)
-    .background(RoundedRectangle(cornerRadius: 14).fill(p.sunk))
+    codeBox(configuration.languageHint, p) { configuration.label }
   }
+}
+
+/// A code block: its language above, the code scrolling sideways.
+func codeBox(_ lang: String?, _ p: Palette, _ code: () -> some View) -> some View {
+  VStack(alignment: .leading, spacing: 8) {
+    if let lang, !lang.isEmpty {
+      Caps(text: lang, color: p.inkSoft)
+    }
+    ScrollView(.horizontal, showsIndicators: false) { code().font(face(14)) }
+  }
+  .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+  .background(RoundedRectangle(cornerRadius: 14).fill(p.sunk))
+}
+
+/// code coloured by codeStyles, as in the editor.
+func highlighted(_ code: String, _ p: Palette) -> AttributedString {
+  var a = AttributedString(code)
+  a.foregroundColor = p.ink
+  for st in codeStyles(code, p) {
+    guard let r = Range(st.range, in: a) else { continue }
+    a[r].foregroundColor = st.color
+    if st.italic { a[r].font = face(14).italic() }
+  }
+  return a
 }

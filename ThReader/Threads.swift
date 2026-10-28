@@ -497,29 +497,6 @@ func splitRows(_ md: String) -> [(text: String, kind: Row)] {
   return out
 }
 
-let tallMathRe = try! Regex(
-  #"\$(?=[^$\s])[^$]*(\\[dt]?frac|\\sum|\\prod|\\int|\\oint|\\sqrt|\\binom|\\over|\\lim|\\begin|\^\{|_\{)[^$]*\$"#)
-
-/// Puts a blank line above a paragraph whose first line has tall inline
-/// math. Textual clips inline math to its paragraph, so math that rises above
-/// the first line needs room; on later lines it overlaps the line above.
-func mathHeadroom(_ md: String) -> String {
-  var fence = false
-  var prevBlank = true
-  var out: [String] = []
-  for line in md.components(separatedBy: "\n") {
-    let t = line.trimmingCharacters(in: .whitespaces)
-    if t.hasPrefix("```") { fence.toggle() }
-    let plain = !t.isEmpty && !"-*+#>|0123456789".contains(t.first!)  // not a list, heading, quote or table
-    // a zero-width space and a hard break: markdown drops a blank or
-    // no-break-space line (hardBreaks sees this one as blank and leaves it)
-    if !fence, prevBlank, plain, line.contains(tallMathRe) { out.append("\u{200b}  ") }
-    out.append(line)
-    prevBlank = t.isEmpty
-  }
-  return out.joined(separator: "\n")
-}
-
 /// Ends every line that has text after it with a markdown hard break, so
 /// lines show as typed, one under another, as in threader.
 func hardBreaks(_ md: String) -> String {

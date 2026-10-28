@@ -88,6 +88,7 @@ struct VimText: NSViewRepresentable {
     let themeChanged = v.pal.map { "\($0.ink) \($0.accent)" } != "\(p.ink) \(p.accent)"
     if f != v.lastFont || themeChanged {
       v.font = f
+      v.defaultParagraphStyle = linePara()
       v.textColor = NSColor(p.ink)
       v.pal = p
       v.lastFont = f
@@ -111,7 +112,7 @@ struct VimText: NSViewRepresentable {
     let h = (s as NSString).boundingRect(
       with: NSSize(width: w, height: .greatestFiniteMagnitude),
       options: [.usesLineFragmentOrigin, .usesFontLeading],
-      attributes: [.font: v.lastFont ?? nsFont()]
+      attributes: [.font: v.lastFont ?? nsFont(), .paragraphStyle: linePara()]
     ).height
     return CGSize(width: w, height: max(120, ceil(h) + 4))
   }
@@ -304,6 +305,7 @@ final class VimTextView: NSTextView {
         ts.setAttributes([.font: base, .foregroundColor: dim], range: f.range)
       }
     }
+    ts.addAttribute(.paragraphStyle, value: linePara(), range: all)
     ts.endEditing()
   }
 

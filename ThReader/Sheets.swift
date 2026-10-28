@@ -254,6 +254,7 @@ struct TextSettings: View {
   }()
 
   var body: some View {
+    @Bindable var store = store
     let p = store.p
     VStack(alignment: .leading, spacing: 8) {
       section("Text", p)
@@ -296,6 +297,11 @@ struct TextSettings: View {
           width: 52)
         Button("+") { store.fontSize += 1 }.buttonStyle(Pill(p: p))
         Text("⌘+ ⌘− ⌘0").font(face(13)).foregroundStyle(p.inkSoft)
+      }
+      row("Line spacing", p) {
+        Slider(value: $store.lineSpacing, in: 0...0.5, step: 0.02).tint(p.accent)
+        Text(String(format: "%.2f em", store.lineSpacing)).font(face(13))
+          .foregroundStyle(p.inkSoft).frame(width: 96, alignment: .trailing)
       }
     }
   }
