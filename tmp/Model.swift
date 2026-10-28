@@ -68,6 +68,9 @@ func writeThread(_ t: Thread) -> String {
   var unfolded: Set<URL> = []
   var sel: Pos?
 
+  var error: String?  // shown in the open sheet
+  var picking = false  // the workspace picker is open...
+  var pickMove: URL?  // ...to move this thread rather than to switch
   var ask: Ask?  // the name being asked for in a sheet
   enum Ask: Equatable {
     case thread
@@ -154,7 +157,7 @@ func writeThread(_ t: Thread) -> String {
       try text.write(to: u, atomically: true, encoding: .utf8)
       return true
     } catch {
-      // self.error = error.localizedDescription
+      self.error = error.localizedDescription
       return false
     }
   }
@@ -252,8 +255,8 @@ func writeThread(_ t: Thread) -> String {
     case .workspace(let moving):
       guard newWorkspace(name) else { return }
       ask = nil
-      if moving != nil {
-        // move(moving, to: name)
+      if let moving {
+        move(moving, to: name)
       } else {
         switchTo(name)
       }
@@ -269,7 +272,7 @@ func writeThread(_ t: Thread) -> String {
   func newWorkspace(_ name: String) -> Bool {
     let n = name.trimmingCharacters(in: .whitespaces)
     guard !n.isEmpty, !n.hasPrefix("."), !n.contains("/"), !n.contains("\\") else {
-      // error = "workspace names can't be empty, start with a dot, or contain slashes"
+      error = "workspace names can't be empty, start with a dot, or contain slashes"
       return false
     }
     do {
@@ -279,6 +282,22 @@ func writeThread(_ t: Thread) -> String {
     } catch {
       return false
     }
+  }
+  func move(_ path: URL, to w: String) {
+    let dst = (w.isEmpty ? root : root.appendingPathComponent(w)).appendingPathComponent(
+      path.lastPathComponent)
+    guard dst.standardizedFileURL != path.standardizedFileURL else { return }
+    guard !FileManager.default.fileExists(atPath: dst.path) else {
+      error = "\(wsName(w)) already has a thread named \(dst.lastPathComponent)"
+      return
+    }
+    do {
+      try FileManager.default.moveItem(at: path, to: dst)
+    } catch {
+      self.error = error.localizedDescription
+      return
+    }
+    reload()
   }
   func setRoot(_ u: URL) {
     UserDefaults.standard.set(u.path, forKey: "root")

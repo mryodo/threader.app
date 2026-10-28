@@ -48,6 +48,10 @@ struct ContentView: View {
       }
 
     }
+    .sheet(isPresented: Binding(get: { store.ask != nil }, set: { if !$0 { store.ask = nil } })) {
+      if store.ask == .root { FolderSheet() } else { NameSheet() }
+    }
+    .onAppear { if Store.askRoot { store.ask = .root } }
   }
 
   var footer: some View {

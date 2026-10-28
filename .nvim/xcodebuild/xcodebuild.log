@@ -5,16 +5,20 @@ textual - https://github.com/gonzalezreal/textual @ 0.5.0
 swift-concurrency-extras - https://github.com/pointfreeco/swift-concurrency-extras @ 1.4.3
 note: Building targets in dependency order
 note: Target dependency graph (9 targets)
-[tmp] Compiling ContentView.swift
-[!]  /Users/mryodo/apps/tmp/tmp/ContentView.swift:65:11: '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
- 63 |       hints.reduce(Text("")) {
- 64 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
-[!]  /Users/mryodo/apps/tmp/tmp/ContentView.swift:64:12: '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
- 62 |       // } else {
- 63 |       hints.reduce(Text("")) {
+[tmp] Compiling Helpers.swift
+[tmp] Compiling Sheets.swift
+[tmp] Compiling Model.swift
 [tmp] Copy arm64-apple-macos.swiftsourceinfo -> tmp.swiftsourceinfo
 [tmp] Copy arm64-apple-macos.abi.json -> tmp.abi.json
-[tmp] Compiling App.swift
+[tmp] Copy arm64-apple-macos.swiftmodule -> tmp.swiftmodule
+[tmp] Copy arm64-apple-macos.swiftdoc -> tmp.swiftdoc
+[tmp] Compiling ContentView.swift
+[!]  /Users/mryodo/apps/tmp/tmp/ContentView.swift:69:11: '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
+ 67 |       hints.reduce(Text("")) {
+ 68 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
+[!]  /Users/mryodo/apps/tmp/tmp/ContentView.swift:68:12: '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
+ 66 |       // } else {
+ 67 |       hints.reduce(Text("")) {
 [tmp] Linking tmp.debug.dylib
 note: Using stub executor library with Swift entry point. (in target 'tmp' from project 'tmp')
 [tmp] Linking tmp
@@ -30,16 +34,16 @@ Build Succeeded
 -----------------------------
 
 Warnings:
-   /Users/mryodo/apps/tmp/tmp/ContentView.swift:65:11
+   /Users/mryodo/apps/tmp/tmp/ContentView.swift:69:11
     '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
-     63 |       hints.reduce(Text("")) {
-     64 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
-     65 |           + Text(" \($1.1)    ").font(face(12)).foregroundColor(p.inkSoft)
-   /Users/mryodo/apps/tmp/tmp/ContentView.swift:64:12
+     67 |       hints.reduce(Text("")) {
+     68 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
+     69 |           + Text(" \($1.1)    ").font(face(12)).foregroundColor(p.inkSoft)
+   /Users/mryodo/apps/tmp/tmp/ContentView.swift:68:12
     '+' was deprecated in macOS 26.0: Use string interpolation on `Text` instead: `Text("Hello \(name)")` [#DeprecatedDeclaration]
-     62 |       // } else {
-     63 |       hints.reduce(Text("")) {
-     64 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
+     66 |       // } else {
+     67 |       hints.reduce(Text("")) {
+     68 |         $0 + Text($1.0).font(face(12, .bold)).foregroundColor(p.ink)
 
   ✔ Build Succeeded
 

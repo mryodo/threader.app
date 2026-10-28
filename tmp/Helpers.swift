@@ -37,3 +37,5 @@ func prettyTS(_ ts: String) -> String {
 func plural(_ n: Int, _ word: String) -> String {
   n == 1 ? "1 \(word)" : "\(n) \(word)s"
 }
+
+func tilde(_ u: URL) -> String { u.path.replacingOccurrences(of: NSHomeDirectory(), with: "~") }
