@@ -3,8 +3,12 @@ name: Build
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write  # to attach the app to releases
 
 jobs:
   build:
@@ -22,3 +26,15 @@ jobs:
         with:
           name: ThReader
           path: ThReader.zip
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          zip="ThReader-${TAG#v}.zip"
+          mv ThReader.zip "$zip"
+          # a release made by hand keeps its notes; otherwise make one
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "ThReader ${TAG#v}" --generate-notes
+          gh release upload "$TAG" "$zip" --clobber
