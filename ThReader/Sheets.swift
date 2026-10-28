@@ -1,5 +1,7 @@
 import AppKit
 import SwiftUI
+import SwiftUIMath
+import Textual
 
 struct SheetFrame<Content: View>: View {
   @Environment(Store.self) var store
@@ -292,6 +294,18 @@ struct TextSettings: View {
         Button("+") { store.fontSize += 1 }.buttonStyle(Pill(p: p))
         Text("⌘+ ⌘− ⌘0").font(face(13)).foregroundStyle(p.inkSoft)
       }
+      row("Math font", p) {
+        Menu {
+          ForEach(mathFaces, id: \.name) { m in Button(m.name) { store.mathFont = m.name } }
+        } label: {
+          Text(store.mathFont + "  ▾").font(face(13, .semibold)).foregroundStyle(p.ink)
+        }
+        .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+        .padding(.horizontal, 14).padding(.vertical, 6)
+        .background(Capsule().fill(p.sunk))
+        Math("e^{i\\pi} + 1 = 0").mathFont(.init(name: .init(rawValue: mathFace.rawValue), size: 14))
+          .foregroundStyle(p.inkSoft).id(store.mathFont)
+      }
       row("Line spacing", p) {
         Slider(value: $store.lineSpacing, in: 0...0.5, step: 0.02).tint(p.accent)
         Text(String(format: "%.2f em", store.lineSpacing)).font(face(13))
@@ -370,6 +384,17 @@ struct SettingsView: View {
           .foregroundStyle(p.inkSoft)
       }
       .disabled(store.opacity >= 1)
+      row("Glass cards", p) {
+        Toggle("", isOn: $store.cardsGlass).toggleStyle(.switch).labelsHidden().tint(p.accent)
+        Text(store.cardsGlass ? "title cards in Liquid Glass" : "off").font(face(13))
+          .foregroundStyle(p.inkSoft)
+      }
+      row("Glass colour", p) {
+        Slider(value: $store.glassTint, in: 0...1).tint(p.accent)
+        Text("\(Int(store.glassTint * 100))% card").font(face(13))
+          .foregroundStyle(p.inkSoft).frame(width: 96, alignment: .trailing)
+      }
+      .disabled(!store.cardsGlass)
       section("LaTeX preamble", p)
       row("\\newcommand  \\def", p) {
         Text("macros for math previews and completion").font(face(13)).foregroundStyle(p.inkSoft)

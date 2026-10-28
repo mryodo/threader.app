@@ -2,9 +2,14 @@ import SwiftUI
 @_spi(Textual) import SwiftUIMath
 import Textual
 
-// TODO: probably need to move it to settings
-//
-let mathFace: MathProperties.FontName = .fira
+var mathFace: MathProperties.FontName = .fira  // from settings
+
+let mathFaces: [(name: String, face: MathProperties.FontName)] = [
+  ("Fira", .fira), ("Latin Modern", .latinModern), ("Libertinus", .libertinus),
+  ("TeX Gyre Termes", .termes), ("XITS", .xits), ("Asana", .asana), ("Euler", .euler),
+  ("Garamond", .garamond), ("KpMath Light", .kpMathLight), ("KpMath Sans", .kpMathSans),
+  ("Noto Sans", .notoSans), ("Lete Sans", .leteSans),
+]
 
 struct MarkdownView: View {
   let text: String

@@ -94,8 +94,12 @@ struct Palette {
     return c
   }
 
+  /// On dark themes the page, not sunk: a card's sunk is see-through white,
+  /// which would make the math light.
   var mathBg: Color {
-    Color(NSColor(sunk).blended(withFraction: 0.15, of: NSColor(accent)) ?? NSColor(sunk))
+    let dark = (NSColor(paper).usingColorSpace(.sRGB)?.brightnessComponent ?? 1) < 0.5
+    let base = NSColor(dark ? paper : sunk)
+    return Color(base.blended(withFraction: 0.15, of: NSColor(accent)) ?? base)
   }
 
   func callout(_ type: String) -> Color {
@@ -205,14 +209,25 @@ struct Raised: ViewModifier {
   var selected = false
   var radius: CGFloat = 24
   var alpha = 1.0
+  var glass = false
+  var tint = 0.8  // how much card colour covers the glass
   func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: radius)
     content
-      .background(RoundedRectangle(cornerRadius: radius).fill(p.raised.opacity(alpha)))
+      .background {
+        if glass {
+          // the colour over the glass, not as its tint: an inactive window greys the tint out
+          Color.clear.glassEffect(.regular, in: shape)
+            .overlay(shape.fill(p.raised.opacity(tint)))
+        } else {
+          shape.fill(p.raised.opacity(alpha))
+        }
+      }
       .overlay(
         RoundedRectangle(cornerRadius: radius).strokeBorder(
           selected ? p.accent : p.line, lineWidth: selected ? 2 : 1)
       )
-      .shadow(color: .black.opacity(alpha < 1 ? 0 : 0.10), radius: 14, y: 8)
+      .shadow(color: .black.opacity(alpha < 1 || glass ? 0 : 0.10), radius: 14, y: 8)
   }
 }
 

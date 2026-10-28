@@ -57,13 +57,15 @@ struct ContentView: View {
       .onContinuousHover { phase in
         if case .active(let at) = phase { hover = at.y < 64 } else { hover = false }
       }
-      .onAppear { listFocus = true }
+      // deferred: the .id below rebuilds this on a theme or font change, and
+      // focus set while it appears doesn't stick, which left the keys dead
+      .onAppear { DispatchQueue.main.async { listFocus = true } }
 
     }
     .background(WindowGlass(clear: store.opacity < 1, blur: store.blur, paper: store.p.paper))
     // on the whole window, so the keys work with the sidebar focused too
     .onKeyPress(action: keys)
-    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.boldStyle) \(store.lineSpacing) \(store.preambleVersion)")  // read when views are built
+    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.boldStyle) \(store.mathFont) \(store.lineSpacing) \(store.theme) \(store.preambleVersion)")  // read when views are built
     .environment(
       \.openURL,
       OpenURLAction { url in

@@ -377,7 +377,8 @@ struct ThreadView: View {
       }
       .padding(22)
       .modifier(
-        Raised(p: c, selected: store.sel == card, alpha: store.cardsClear ? store.opacity : 1)
+        Raised(p: c, selected: store.sel == card, alpha: store.cardsClear ? store.opacity : 1,
+          glass: store.cardsGlass, tint: store.glassTint)
       )
       .contentShape(Rectangle())
       .onTapGesture { store.sel = card }

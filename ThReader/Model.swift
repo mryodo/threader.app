@@ -112,6 +112,12 @@ func writeThread(_ t: Thread) -> String {
   var cardsClear = UserDefaults.standard.object(forKey: "cardsClear") as? Bool ?? true {  // title cards follow opacity
     didSet { UserDefaults.standard.set(cardsClear, forKey: "cardsClear") }
   }
+  var cardsGlass = UserDefaults.standard.bool(forKey: "cardsGlass") {  // title cards in Liquid Glass
+    didSet { UserDefaults.standard.set(cardsGlass, forKey: "cardsGlass") }
+  }
+  var glassTint = UserDefaults.standard.object(forKey: "glassTint") as? Double ?? 0.8 {  // card colour over the glass
+    didSet { UserDefaults.standard.set(glassTint, forKey: "glassTint") }
+  }
   var blur = UserDefaults.standard.object(forKey: "blur") as? Double ?? 10 {  // blur radius behind a see-through window
     didSet { UserDefaults.standard.set(blur, forKey: "blur") }
   }
@@ -134,6 +140,12 @@ func writeThread(_ t: Thread) -> String {
       applyStyle()
     }
   }
+  var mathFont = UserDefaults.standard.string(forKey: "mathFont") ?? "Fira" {
+    didSet {
+      mathFace = mathFaces.first { $0.name == mathFont }?.face ?? .fira
+      UserDefaults.standard.set(mathFont, forKey: "mathFont")
+    }
+  }
   var fontSize = UserDefaults.standard.object(forKey: "fontSize") as? Double ?? 15 {
     didSet {
       let clamped = min(24, max(11, fontSize))
@@ -149,6 +161,7 @@ func writeThread(_ t: Thread) -> String {
   var lineSpacing = UserDefaults.standard.object(forKey: "lineSpacing") as? Double ?? 0.08 {
     didSet {
       lineGap = lineSpacing
+    mathFace = mathFaces.first { $0.name == mathFont }?.face ?? .fira
       UserDefaults.standard.set(lineSpacing, forKey: "lineSpacing")
     }
   }
