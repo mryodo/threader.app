@@ -63,7 +63,7 @@ struct ContentView: View {
     .background(WindowGlass(clear: store.opacity < 1, blur: store.blur, paper: store.p.paper))
     // on the whole window, so the keys work with the sidebar focused too
     .onKeyPress(action: keys)
-    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.lineSpacing) \(store.preambleVersion)")  // read when views are built
+    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.boldStyle) \(store.lineSpacing) \(store.preambleVersion)")  // read when views are built
     .environment(
       \.openURL,
       OpenURLAction { url in

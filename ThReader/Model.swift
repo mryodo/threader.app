@@ -66,7 +66,14 @@ func writeThread(_ t: Thread) -> String {
   var ws = ""  // the open workspace; "" is the threads folder itself
   var threads: [Thread] = []
   var unfolded: Set<URL> = []
-  var sel: Pos?
+  var sel: Pos? {
+    didSet {  // remembered per workspace folder, as "file.md note"
+      guard let sel else { return }
+      var last = UserDefaults.standard.dictionary(forKey: "lastSel") ?? [:]
+      last[dir.path] = "\(sel.path.lastPathComponent) \(sel.note)"
+      UserDefaults.standard.set(last, forKey: "lastSel")
+    }
+  }
 
   var editing: Pos?  // the card or note being edited
   var adding: URL?  // the thread a new note is being written for
@@ -121,6 +128,12 @@ func writeThread(_ t: Thread) -> String {
       applyStyle()
     }
   }
+  var boldStyle = UserDefaults.standard.string(forKey: "boldStyle") ?? "Bold" {  // for bold text and headings
+    didSet {
+      UserDefaults.standard.set(boldStyle, forKey: "boldStyle")
+      applyStyle()
+    }
+  }
   var fontSize = UserDefaults.standard.object(forKey: "fontSize") as? Double ?? 15 {
     didSet {
       let clamped = min(24, max(11, fontSize))
@@ -146,6 +159,7 @@ func writeThread(_ t: Thread) -> String {
   }
   func applyStyle() {
     regularFace = fontStyles(fontFamily).first { $0.style == fontStyle }?.face
+    boldFace = fontStyles(fontFamily).first { $0.style == boldStyle }?.face
   }
 
   var dir: URL { ws.isEmpty ? root : root.appendingPathComponent(ws) }
@@ -185,7 +199,14 @@ func writeThread(_ t: Thread) -> String {
   func switchTo(_ w: String) {
     ws = w
     reload()
-    if let first = threads.first {
+    if let s = UserDefaults.standard.dictionary(forKey: "lastSel")?[dir.path] as? String,
+      let space = s.lastIndex(of: " "), let note = Int(s[s.index(after: space)...]),
+      let t = threads.first(where: { $0.path.lastPathComponent == s[..<space] }),
+      note < t.notes.count
+    {
+      sel = Pos(path: t.path, note: note)
+      unfolded.insert(t.path)
+    } else if let first = threads.first {
       sel = Pos(path: first.path, note: -1)
       unfolded.insert(first.path)
     } else {

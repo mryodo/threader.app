@@ -278,18 +278,12 @@ struct TextSettings: View {
         .background(Capsule().fill(p.sunk))
       }
       row("Style", p) {
-        let styles = fontStyles(store.fontFamily).map(\.style)
-        Menu {
-          ForEach(styles, id: \.self) { st in Button(st) { store.fontStyle = st } }
-        } label: {
-          Text((styles.contains(store.fontStyle) ? store.fontStyle : "Regular") + "  ▾")
-            .font(face(13, .semibold)).foregroundStyle(p.ink)
-        }
-        .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-        .padding(.horizontal, 14).padding(.vertical, 6)
-        .background(Capsule().fill(p.sunk))
-        .disabled(styles.count < 2)
+        styleMenu($store.fontStyle, "Regular", p)
         Text("for body text and the editor").font(face(13)).foregroundStyle(p.inkSoft)
+      }
+      row("Bold", p) {
+        styleMenu($store.boldStyle, "Bold", p)
+        Text("for bold text and headings").font(face(13)).foregroundStyle(p.inkSoft)
       }
       row("Size", p) {
         Button("−") { store.fontSize -= 1 }.buttonStyle(Pill(p: p))
@@ -304,6 +298,23 @@ struct TextSettings: View {
           .foregroundStyle(p.inkSoft).frame(width: 96, alignment: .trailing)
       }
     }
+  }
+}
+
+extension TextSettings {
+  /// A menu of the font family's styles, showing `fallback` if `style` isn't one.
+  func styleMenu(_ style: Binding<String>, _ fallback: String, _ p: Palette) -> some View {
+    let styles = fontStyles(store.fontFamily).map(\.style)
+    return Menu {
+      ForEach(styles, id: \.self) { st in Button(st) { style.wrappedValue = st } }
+    } label: {
+      Text((styles.contains(style.wrappedValue) ? style.wrappedValue : fallback) + "  ▾")
+        .font(face(13, .semibold)).foregroundStyle(p.ink)
+    }
+    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+    .padding(.horizontal, 14).padding(.vertical, 6)
+    .background(Capsule().fill(p.sunk))
+    .disabled(styles.count < 2)
   }
 }
 

@@ -260,7 +260,9 @@ final class VimTextView: NSTextView {
     let s = ts.string
     let base = nsFont()
     let fm = NSFontManager.shared
-    let bold = fm.convert(base, toHaveTrait: .boldFontMask)
+    let bold =
+      boldFace.flatMap { NSFont(name: $0, size: base.pointSize) }
+      ?? fm.convert(base, toHaveTrait: .boldFontMask)
     let italic = fm.convert(base, toHaveTrait: .italicFontMask)
     let dim = NSColor(p.inkSoft)
     let accent = NSColor(p.accent)

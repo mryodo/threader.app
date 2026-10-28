@@ -131,6 +131,7 @@ var fontScale: CGFloat = 1
 var lineGap: CGFloat = 0.08  // extra space between lines, in ems
 var fontName = "Maple Mono"
 var regularFace: String?
+var boldFace: String?  // the face for .bold, from settings
 
 func fontStyles(_ family: String) -> [(style: String, face: String)] {
   (NSFontManager.shared.availableMembers(ofFontFamily: family) ?? []).compactMap { m in
@@ -159,6 +160,9 @@ func linePara() -> NSParagraphStyle {
 func font(_ family: String, _ size: CGFloat, _ w: Font.Weight) -> Font {
   let size = size * fontScale
   if w == .regular, family == fontName, let face = regularFace {
+    return .custom(face, size: size)
+  }
+  if w == .bold, family == fontName, let face = boldFace {
     return .custom(face, size: size)
   }
   return installed.contains(family)
