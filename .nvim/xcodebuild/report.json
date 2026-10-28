@@ -1,1 +1,1 @@
-{"testsCount": 0, "xcresultFilepath": "/Users/mryodo/apps/tmp/.nvim/xcodebuild/build.xcresult", "failedTestsCount": 0, "usesSwiftTesting": false, "buildWarnings": [], "tests": [], "buildErrors": [], "testErrors": []}
+{"testsCount": 0, "failedTestsCount": 0, "usesSwiftTesting": false, "buildWarnings": [], "tests": [], "buildErrors": [{"source": "xcodebuild", "message": ["'/Users/mryodo/apps/tmp/tmp.xcodeproj' does not exist."]}], "testErrors": []}

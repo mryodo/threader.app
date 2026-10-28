@@ -216,6 +216,7 @@ struct WorkspacePicker: View {
     if let m = store.pickMove {
       store.move(m, to: w)
     } else {
+      store.commit()
       store.query = ""
       store.switchTo(w)
     }
@@ -302,6 +303,7 @@ struct TextSettings: View {
 
 struct SettingsView: View {
   @Environment(Store.self) var store
+  @State var draft: String?
 
   var body: some View {
     @Bindable var store = store
@@ -351,10 +353,38 @@ struct SettingsView: View {
           .foregroundStyle(p.inkSoft)
       }
       .disabled(store.opacity >= 1)
+      section("LaTeX preamble", p)
+      row("\\newcommand  \\def", p) {
+        Text("macros for math previews and completion").font(face(13)).foregroundStyle(p.inkSoft)
+      }
+      row("\\usepackage{name}", p) {
+        Text("reads name.sty from the threads folder").font(face(13)).foregroundStyle(p.inkSoft)
+      }
+      TextEditor(text: Binding(get: { draft ?? store.preamble }, set: { draft = $0 }))
+        .font(face(13)).foregroundStyle(p.ink)
+        .scrollContentBackground(.hidden)
+        .padding(10).frame(height: 150)
+        .background(RoundedRectangle(cornerRadius: 14).fill(p.sunk))
+        .padding(.top, 4)
+      HStack(spacing: 8) {
+        Text("\(texMacros.count) macros · \(Store.preambleFile)").font(face(13)).foregroundStyle(
+          p.inkSoft)
+        Spacer()
+        Button("Revert") { draft = nil }.buttonStyle(Pill(p: p)).disabled(draft == nil)
+        Button("Save") {
+          store.savePreamble(draft ?? store.preamble)
+          draft = nil
+        }.buttonStyle(Pill(p: p, primary: true)).disabled(draft == nil)
+      }
     }
     .padding(28)
     .frame(width: 620)
+    .ignoresSafeArea(edges: .top)  // up into the hidden title bar
     .background(p.paper.ignoresSafeArea())
+    // no title bar at all: ⌘W closes it
+    .background(WindowGlass(clear: false, blur: 0, paper: p.paper, buttons: false))
+    .toolbar(removing: .title)
+    .toolbarBackground(.hidden, for: .windowToolbar)
     .preferredColorScheme(store.light ? .light : .dark)
   }
 }

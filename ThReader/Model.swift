@@ -68,6 +68,14 @@ func writeThread(_ t: Thread) -> String {
   var unfolded: Set<URL> = []
   var sel: Pos?
 
+  var editing: Pos?  // the card or note being edited
+  var adding: URL?  // the thread a new note is being written for
+  var draft = ""
+  var draftOrig = ""  // the draft as it was opened, so an unchanged one isn't written
+  var insertStart = false  // open the editor in insert mode
+  var preamble = ""  // LaTeX macros for math previews, from preambleFile
+  var preambleVersion = 0
+
   var error: String?  // shown in the open sheet
   var help = false
   var picking = false  // the workspace picker is open...
@@ -89,6 +97,7 @@ func writeThread(_ t: Thread) -> String {
   static let stateFile = ".threader-workspace"
   static let themeFile = ".threader-theme"
   static let pinFile = ".threader-pinned"  // per workspace: the file names pinned to the top
+  static let preambleFile = ".threader-preamble.tex"
 
   var opacity = UserDefaults.standard.object(forKey: "opacity") as? Double ?? 1 {
     didSet { UserDefaults.standard.set(opacity, forKey: "opacity") }
@@ -239,6 +248,9 @@ func writeThread(_ t: Thread) -> String {
     if !Store.askRoot {  // don't create ~/threads before the user has picked a folder
       try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     }
+    preamble = read(root.appendingPathComponent(Store.preambleFile)) ?? ""
+    texMacros = parseMacros(preamble, load: loadPackage)
+    preambleVersion += 1
 
     var last =
       read(root.appendingPathComponent(Store.stateFile))?.trimmingCharacters(
@@ -316,7 +328,7 @@ func writeThread(_ t: Thread) -> String {
   }
   func setRoot(_ u: URL) {
     UserDefaults.standard.set(u.path, forKey: "root")
-    // commit()
+    commit()
     query = ""
     unfolded = []
     open(u)

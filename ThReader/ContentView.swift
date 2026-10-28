@@ -41,7 +41,7 @@ struct ContentView: View {
       VStack(spacing: 0) {
         ScrollViewReader { proxy in
           ScrollView {
-            list.padding(.horizontal, 36).padding(.top, 56).padding(.bottom, 28)
+            list.padding(.horizontal, 36).padding(.bottom, 28)
               .frame(maxWidth: 820).frame(maxWidth: .infinity)
           }
           .onChange(of: store.sel) {
@@ -52,7 +52,6 @@ struct ContentView: View {
       }
       .background(store.p.paper.opacity(store.opacity).ignoresSafeArea())
       .focusable().focused($listFocus).focusEffectDisabled()
-      .onKeyPress(action: keys)
       // outside the focusable list, or the search field can't take focus
       .overlay(alignment: .topTrailing) { topBar }
       .onContinuousHover { phase in
@@ -62,12 +61,28 @@ struct ContentView: View {
 
     }
     .background(WindowGlass(clear: store.opacity < 1, blur: store.blur, paper: store.p.paper))
-    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle)")  // read when views are built
+    // on the whole window, so the keys work with the sidebar focused too
+    .onKeyPress(action: keys)
+    .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.preambleVersion)")  // read when views are built
+    .environment(
+      \.openURL,
+      OpenURLAction { url in
+        let rest = url.absoluteString.drop { $0 != ":" }.dropFirst().removingPercentEncoding ?? ""
+        switch url.scheme {
+        case "threader-link":
+          // deferred so it runs after the card's own tap handler, which selects the clicked card
+          DispatchQueue.main.async { store.follow(rest) }
+        case "threader-tag": store.query = "#" + rest
+        default: return .systemAction
+        }
+        return .handled
+      })
     .preferredColorScheme(store.light ? .light : .dark)
     .tint(store.p.accent)
     .onReceive(
       NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
     ) { _ in store.reload() }
+    .onChange(of: store.editing == nil && store.adding == nil) { if $1 { listFocus = true } }
     .sheet(isPresented: Bindable(store).help) { Help() }
     .sheet(isPresented: Bindable(store).picking) { WorkspacePicker() }
     .sheet(isPresented: Binding(get: { store.ask != nil }, set: { if !$0 { store.ask = nil } })) {
@@ -149,6 +164,10 @@ struct ContentView: View {
 
   /// The terminal app's list keys, without the editing ones.
   func keys(_ k: KeyPress) -> KeyPress.Result {
+    // typing goes to the editor, the search field and the sheets' fields
+    guard store.editing == nil, store.adding == nil, !searchFocus, !store.help, !store.picking,
+      store.ask == nil
+    else { return .ignored }
     store.error = nil
     let s = store.sel
     if k.modifiers.contains(.control), k.key == "r" {
@@ -172,6 +191,8 @@ struct ContentView: View {
         store.unfolded.remove(s.path)
         store.sel = Pos(path: s.path, note: -1)
       }
+    case "e", "i": if let s { store.edit(s) }
+    case "p", "o": if let s { store.addNote(s.path) }
     case "s": store.showSidebar.toggle()
     case "w":
       store.pickMove = nil
@@ -240,6 +261,7 @@ struct Sidebar: View {
             w == store.ws ? "folder.fill" : "folder", store.wsName(w),
             store.count(w), on: w == store.ws
           ) {
+            store.commit()
             store.query = ""
             store.switchTo(w)
           }
@@ -248,7 +270,7 @@ struct Sidebar: View {
           store.ask = .workspace(moving: nil)
         }
       } header: {
-        Caps(text: "Workspaces", color: p.inkSoft)
+        Caps(text: "Workspaces", color: p.inkSoft).padding(.top, 32)
       }
       Section {
         let tags = store.allTags()
@@ -265,6 +287,8 @@ struct Sidebar: View {
       }
     }
     .scrollContentBackground(.hidden)
+    // just below the window buttons, rather than below a whole title bar
+    .ignoresSafeArea(edges: .top)
     .background(p.sunk.opacity(store.opacity).ignoresSafeArea())
   }
   func row(_ icon: String, _ name: String, _ n: Int?, on: Bool, _ tap: @escaping () -> Void)

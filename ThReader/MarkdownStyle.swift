@@ -9,6 +9,8 @@ let mathFace: MathProperties.FontName = .fira
 struct MarkdownView: View {
   let text: String
   let p: Palette
+  var dir: URL? = nil  // the thread's folder, for images by relative path
+  var toggle: ((String) -> Void)? = nil  // ticks a task line, given as drawn
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
@@ -30,7 +32,7 @@ struct MarkdownView: View {
               .foregroundStyle(c)
               Caps(text: b.head.isEmpty ? type : b.head, color: c)
             }
-            MarkdownView(text: b.body, p: p)
+            MarkdownView(text: b.body, p: p, dir: dir, toggle: toggle)
           }
           .padding(.vertical, 12).padding(.leading, 18).padding(.trailing, 14)
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -40,8 +42,20 @@ struct MarkdownView: View {
               .leading, 6)
           }
         } else {
-          StructuredText(markdown: inlineMath(b.body), syntaxExtensions: [.math])
-            .threaderMarkdown(p)
+          VStack(alignment: .leading, spacing: 4) {
+            ForEach(Array(splitRows(b.body).enumerated()), id: \.offset) { _, s in
+              switch s.kind {
+              case .task: TaskRow(line: s.text, p: p, toggle: toggle)
+              case .image(let alt, let src): ImageRow(alt: alt, src: src, dir: dir, p: p)
+              case .text:
+                StructuredText(
+                  markdown: inlineMath(linkify(hardBreaks(mathHeadroom(s.text)))), baseURL: dir,
+                  syntaxExtensions: [.math]
+                )
+                .threaderMarkdown(p)
+              }
+            }
+          }
         }
       }
     }
@@ -115,7 +129,7 @@ func inlineMath(_ md: String) -> String {
     if fence || line.trimmingCharacters(in: .whitespaces).hasPrefix("```") { return line }
     return line.replacing(/(`[^`]*`|\\\$|\$\$.+?\$\$)|\$([^$\s](?:[^$]*[^$\s])?)\$/) { m in
       guard let src = m.output.2 else { return String(m.output.0) }
-      let enc = src.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+      let enc = expandMacros(String(src)).addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
       return "![math](mathchip:\(enc))"
     }
   }.joined(separator: "\n")
@@ -152,19 +166,25 @@ struct MathChip: Attachment {
   var selectionStyle: AttachmentSelectionStyle { .text }
   var font: Math.Font { .init(name: .init(rawValue: mathFace.rawValue), size: size) }
 
+  // The text reserves a 1pt-tall placeholder on the baseline, so math never
+  // grows its line (as in threader). Textual draws the body into it, so the
+  // body is that size too and the chip hangs over it, its baseline on the
+  // placeholder's bottom, free to overlap the lines around.
   var body: some View {
-    Math(latex).mathFont(font).mathTypesettingStyle(.text).foregroundStyle(ink)
-      .padding(.horizontal, Self.pad.width).padding(.vertical, Self.pad.height)
-      .background(RoundedRectangle(cornerRadius: 4).fill(bg))
-  }
-
-  func baselineOffset(in _: TextEnvironmentValues) -> CGFloat {
-    -bounds(.unspecified).descent - Self.pad.height
+    let b = bounds(.unspecified)
+    Color.clear.frame(width: b.size.width + 2 * Self.pad.width, height: 1)
+      .overlay(alignment: .bottom) {
+        Math(latex).mathFont(font).mathTypesettingStyle(.text).foregroundStyle(ink)
+          .frame(width: b.size.width, height: b.size.height)
+          .padding(.horizontal, Self.pad.width).padding(.vertical, Self.pad.height)
+          .background(RoundedRectangle(cornerRadius: 4).fill(bg))
+          .fixedSize()
+          .offset(y: b.descent + Self.pad.height)
+      }
   }
 
   func sizeThatFits(_ proposal: ProposedViewSize, in _: TextEnvironmentValues) -> CGSize {
-    let s = bounds(proposal).size
-    return CGSize(width: s.width + 2 * Self.pad.width, height: s.height + 2 * Self.pad.height)
+    CGSize(width: bounds(proposal).size.width + 2 * Self.pad.width, height: 1)
   }
 
   private func bounds(_ proposal: ProposedViewSize) -> Math.TypographicBounds {
@@ -200,7 +220,7 @@ extension View {
         InlineStyle()
           .code(.font(face(14)), .backgroundColor(p.sunk))
           .strong(.font(face(15, .bold)))
-          .link(.foregroundColor(p.accent), .underlineStyle(.single))
+          .link(.foregroundColor(p.accent), .fontWeight(.semibold))
       )
       .textual.mathProperties(MathProperties(fontName: mathFace))
       .textual.imageAttachmentLoader(
@@ -213,7 +233,19 @@ extension View {
       .textual.thematicBreakStyle(Rule(p: p))
       .textual.codeBlockStyle(Code(p: p))
       .textual.highlighterTheme(
-        .init(foregroundColor: .init(p.ink), backgroundColor: .init(p.sunk)))
+        .init(
+          foregroundColor: .init(p.ink), backgroundColor: .init(p.sunk),
+          tokenProperties: [
+            .comment: AnyTextProperty(.foregroundColor(p.inkSoft), .italic),
+            .blockComment: AnyTextProperty(.foregroundColor(p.inkSoft), .italic),
+            .docComment: AnyTextProperty(.foregroundColor(p.inkSoft), .italic),
+            .string: AnyTextProperty(.foregroundColor(p.teal)),
+            .char: AnyTextProperty(.foregroundColor(p.teal)),
+            .number: AnyTextProperty(.foregroundColor(p.amber)),
+            .keyword: AnyTextProperty(.foregroundColor(p.accent)),
+            .boolean: AnyTextProperty(.foregroundColor(p.accent)),
+            .builtin: AnyTextProperty(.foregroundColor(p.accent)),
+          ]))
   }
 }
 
