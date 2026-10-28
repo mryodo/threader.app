@@ -1,16 +1,12 @@
 Resolving Package Graph
 Resolved source packages
 swiftui-math - https://github.com/gonzalezreal/swiftui-math @ 0.1.0
-textual - https://github.com/gonzalezreal/textual @ 0.5.0
 swift-concurrency-extras - https://github.com/pointfreeco/swift-concurrency-extras @ 1.4.3
+textual - https://github.com/gonzalezreal/textual @ 0.5.0
 note: Building targets in dependency order
 note: Target dependency graph (9 targets)
 [tmp] Compiling Model.swift
-[tmp] Compiling Helpers.swift
-[tmp] Compiling ContentView.swift
-[tmp] Compiling App.swift
 [tmp] Copy arm64-apple-macos.swiftsourceinfo -> tmp.swiftsourceinfo
-[tmp] Copy arm64-apple-macos.swiftmodule -> tmp.swiftmodule
 [tmp] Copy arm64-apple-macos.abi.json -> tmp.abi.json
 [tmp] Linking tmp.debug.dylib
 note: Using stub executor library with Swift entry point. (in target 'tmp' from project 'tmp')

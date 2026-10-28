@@ -110,11 +110,131 @@ func writeThread(_ t: Thread) -> String {
     }
   }
 
+  static var askRoot: Bool {
+    ProcessInfo.processInfo.environment["THREADER_DIR"] == nil
+      && UserDefaults.standard.string(forKey: "root") == nil
+  }
   func applyStyle() {
     regularFace = fontStyles(fontFamily).first { $0.style == fontStyle }?.face
   }
 
-  init() {
+  var dir: URL { ws.isEmpty ? root : root.appendingPathComponent(ws) }
 
+  func wsName(_ w: String) -> String { w.isEmpty ? root.lastPathComponent : w }
+
+  func workspaces() -> [String] {
+    let entries =
+      (try? FileManager.default.contentsOfDirectory(
+        at: root, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles))
+      ?? []
+    let dirs = entries.filter {
+      (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+    }
+    return [""] + dirs.map(\.lastPathComponent).sorted()
+  }
+
+  /// The number of threads in workspace `w`.
+  func count(_ w: String) -> Int {
+    let d = w.isEmpty ? root : root.appendingPathComponent(w)
+    let files = (try? FileManager.default.contentsOfDirectory(atPath: d.path)) ?? []
+    return files.filter { $0.hasSuffix(".md") }.count
+  }
+
+  func read(_ u: URL) -> String? { try? String(contentsOf: u, encoding: .utf8) }
+
+  @discardableResult
+  func write(_ text: String, to u: URL) -> Bool {
+    do {
+      try text.write(to: u, atomically: true, encoding: .utf8)
+      return true
+    } catch {
+      // self.error = error.localizedDescription
+      return false
+    }
+  }
+  func switchTo(_ w: String) {
+    ws = w
+    reload()
+    if let first = threads.first {
+      sel = Pos(path: first.path, note: -1)
+      unfolded.insert(first.path)
+    } else {
+      sel = nil
+    }
+    try? (w + "\n").write(
+      to: root.appendingPathComponent(Store.stateFile), atomically: true, encoding: .utf8)  // best effort
+  }
+  func reload() {
+    let pins = pinned()
+    let files =
+      (try? FileManager.default.contentsOfDirectory(
+        at: dir, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
+    threads = files.filter { $0.pathExtension == "md" }.compactMap { f in
+      guard var t = loadThread(f.path) else { return nil }
+      t.pinned = pins.contains(f.lastPathComponent)
+      return t
+    }
+    // pinned first, then the most recently changed
+    threads.sort { $0.pinned != $1.pinned ? $0.pinned : $0.mtime > $1.mtime }
+  }
+  func pinned() -> Set<String> {
+    let text = read(dir.appendingPathComponent(Store.pinFile)) ?? ""
+    return Set(text.split(whereSeparator: \.isNewline).map(String.init))
+  }
+
+  func togglePin(_ path: URL) {
+    var pins = pinned()
+    let name = path.lastPathComponent
+    if pins.remove(name) == nil {
+      pins.insert(name)
+    }
+    // drop pins of threads that were deleted or moved away
+    let keep = pins.filter {
+      FileManager.default.fileExists(atPath: dir.appendingPathComponent($0).path)
+    }.sorted()
+    guard
+      write(
+        keep.joined(separator: "\n") + "\n", to: dir.appendingPathComponent(Store.pinFile))
+    else { return }
+    reload()
+  }
+
+  init() {
+    let saved =
+      ProcessInfo.processInfo.environment["THREADER_DIR"]
+      ?? UserDefaults.standard.string(forKey: "root")
+    root =
+      saved.map { URL(fileURLWithPath: $0) }
+      ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("threads")
+    fontScale = fontSize / 15
+    fontName = fontFamily
+    applyStyle()
+    // Use the saved theme if it still exists, else the terminal app's.
+    let terminalTheme = read(root.appendingPathComponent(Store.themeFile))?.trimmingCharacters(
+      in: .whitespacesAndNewlines)
+    let candidates = [UserDefaults.standard.string(forKey: "theme"), terminalTheme].compactMap {
+      $0
+    }
+    theme =
+      candidates.first { name in Palette.themes.contains { $0.name == name } } ?? "ayugloom"
+    open(root)
+  }
+
+  func open(_ u: URL) {
+    root = u
+    if !Store.askRoot {  // don't create ~/threads before the user has picked a folder
+      try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+    }
+
+    var last =
+      read(root.appendingPathComponent(Store.stateFile))?.trimmingCharacters(
+        in: .whitespacesAndNewlines) ?? ""
+    var isDir: ObjCBool = false
+    let exists = FileManager.default.fileExists(
+      atPath: root.appendingPathComponent(last).path, isDirectory: &isDir)
+    if last.contains("/") || !exists || !isDir.boolValue {
+      last = ""
+    }
+    switchTo(last)
   }
 }
