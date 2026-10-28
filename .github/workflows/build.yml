@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 27
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_27*.app | tail -1)" && xcodebuild -version
+      - name: Build
+        run: ./build.sh
+        env:
+          XCODEFLAGS: CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+      - name: Zip
+        run: ditto -c -k --keepParent build/ThReader.app ThReader.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ThReader
+          path: ThReader.zip
