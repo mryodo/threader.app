@@ -62,6 +62,58 @@ func writeThread(_ t: Thread) -> String {
 }
 
 @Observable final class Store {
+  var root: URL  // the threads folder
+  var ws = ""  // the open workspace; "" is the threads folder itself
+  var threads: [Thread] = []
+  var unfolded: Set<URL> = []
+  var sel: Pos?
+
+  var showSidebar = true
+  var theme = "sw1comm"  // a Palette.themes name
+
+  // BUG: this probably should be in cache or in one json or toml file
+  static let stateFile = ".threader-workspace"
+  static let themeFile = ".threader-theme"
+  static let pinFile = ".threader-pinned"  // per workspace: the file names pinned to the top
+
+  var opacity = UserDefaults.standard.object(forKey: "opacity") as? Double ?? 1 {
+    didSet { UserDefaults.standard.set(opacity, forKey: "opacity") }
+  }
+  var cardsClear = UserDefaults.standard.object(forKey: "cardsClear") as? Bool ?? true {  // title cards follow opacity
+    didSet { UserDefaults.standard.set(cardsClear, forKey: "cardsClear") }
+  }
+  var blur = UserDefaults.standard.object(forKey: "blur") as? Double ?? 10 {  // blur radius behind a see-through window
+    didSet { UserDefaults.standard.set(blur, forKey: "blur") }
+  }
+  var fontFamily = UserDefaults.standard.string(forKey: "fontFamily") ?? "Maple Mono" {
+    didSet {
+      fontName = fontFamily
+      UserDefaults.standard.set(fontFamily, forKey: "fontFamily")
+      applyStyle()
+    }
+  }
+  var fontStyle = UserDefaults.standard.string(forKey: "fontStyle") ?? "Light" {  // Thin, Light, ...
+    didSet {
+      UserDefaults.standard.set(fontStyle, forKey: "fontStyle")
+      applyStyle()
+    }
+  }
+  var fontSize = UserDefaults.standard.object(forKey: "fontSize") as? Double ?? 15 {
+    didSet {
+      let clamped = min(24, max(11, fontSize))
+      if fontSize != clamped {
+        fontSize = clamped
+        return
+      }
+      fontScale = fontSize / 15
+      UserDefaults.standard.set(fontSize, forKey: "fontSize")
+    }
+  }
+
+  func applyStyle() {
+    regularFace = fontStyles(fontFamily).first { $0.style == fontStyle }?.face
+  }
+
   init() {
 
   }
