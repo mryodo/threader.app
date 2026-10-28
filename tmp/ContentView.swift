@@ -1,6 +1,7 @@
 import Foundation
 import Playgrounds
 import SwiftUI
+import Textual
 
 struct MarkdownFileView: View {
   let path: String
@@ -22,14 +23,21 @@ struct ContentView: View {
   var body: some View {
 
     NavigationSplitView {
-      Sidebar().navigationSplitViewColumnWidth(min: 200, ideal: 230).toolbar(
+      Sidebar().navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 200).toolbar(
         removing: .sidebarToggle)
     } detail: {
 
       VStack(spacing: 0) {
         ScrollView {
           Text("123").padding()
-          MarkdownFileView(path: "/Users/mryodo/Documents/notes/threads/test.md")
+          // MarkdownFileView(path: "/Users/mryodo/Documents/notes/threads/test.md")
+          MarkdownView(
+            text: (try? String(
+              contentsOfFile: "/Users/mryodo/Documents/notes/threads/test.md",
+              encoding: .utf8))
+              ?? "Could not read file",
+            p: .sw1comm
+          ).padding()
         }
         Rectangle()
           .foregroundColor(.clear)

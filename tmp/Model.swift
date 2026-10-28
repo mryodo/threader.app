@@ -2,7 +2,7 @@ import Foundation
 import Observation
 
 struct Note: Hashable {
-  var ts: String
+  var timestamp: String
   var body: String
 }
 
@@ -17,12 +17,3 @@ struct Thread: Identifiable {
 }
 
 let stampFormat = "yyyy-MM-dd HH:mm"
-
-@Observable final class Store {
-
-  var root: URL  // the threads folder
-  var ws = ""  // the open workspace; "" is the threads folder itself
-  var threads: [Thread] = []
-  var unfolded: Set<URL> = []
-  var sel: Pos?
-}
