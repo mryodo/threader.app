@@ -20,6 +20,8 @@ struct MarkdownFileView: View {
 }
 
 struct ContentView: View {
+
+  let thr = loadThread("/Users/mryodo/Documents/notes/threads/test.md")
   var body: some View {
 
     NavigationSplitView {
@@ -30,13 +32,15 @@ struct ContentView: View {
       VStack(spacing: 0) {
         ScrollView {
           Text("123").padding()
-          // MarkdownFileView(path: "/Users/mryodo/Documents/notes/threads/test.md")
+          // MarkdownView(
+          //   text: (try? String(
+          //     contentsOfFile: "/Users/mryodo/Documents/notes/threads/test.md",
+          //     encoding: .utf8))
+          //     ?? "Could not read file",
+          //   p: .sw1comm
+          // ).padding()
           MarkdownView(
-            text: (try? String(
-              contentsOfFile: "/Users/mryodo/Documents/notes/threads/test.md",
-              encoding: .utf8))
-              ?? "Could not read file",
-            p: .sw1comm
+            text: thr?.card ?? "Could not read file", p: .sw1comm
           ).padding()
         }
         Rectangle()
@@ -52,26 +56,15 @@ struct ContentView: View {
 }
 
 struct Sidebar: View {
-  let rootPath = "/Users/mryodo/threads"
+  let rootPath = "/Users/mryodo/Documents/notes/threads"
   @State private var folders: [URL] = []
   @State private var selection: URL?
 
   var body: some View {
-    List {
+    List(selection: $selection) {
       Section {
-        List(folders, id: \.self, selection: $selection) { url in
+        ForEach(folders, id: \.self) { url in
           Label(url.lastPathComponent, systemImage: "folder")
-        }
-        .task {
-          let urls =
-            (try? FileManager.default.contentsOfDirectory(
-              at: URL(filePath: rootPath),
-              includingPropertiesForKeys: [.isDirectoryKey],
-              options: .skipsHiddenFiles)) ?? []
-          folders = urls.filter {
-            (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
-          }
-          .sorted { $0.lastPathComponent < $1.lastPathComponent }
         }
       } header: {
         Text("workspaces".uppercased())
@@ -80,6 +73,17 @@ struct Sidebar: View {
       } header: {
         Text("tags".uppercased())
       }
+    }
+    .task {
+      let urls =
+        (try? FileManager.default.contentsOfDirectory(
+          at: URL(filePath: rootPath),
+          includingPropertiesForKeys: [.isDirectoryKey],
+          options: .skipsHiddenFiles)) ?? []
+      folders = urls.filter {
+        (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+      }
+      .sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
   }
 

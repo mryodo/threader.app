@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6585D4E9309201D10044FC4B /* Textual in Frameworks */ = {isa = PBXBuildFile; productRef = 6585D4E8309201D10044FC4B /* Textual */; };
+		6585D4EB309201D10044FC4B /* SwiftUIMath in Frameworks */ = {isa = PBXBuildFile; productRef = 6585D4EA309201D10044FC4B /* SwiftUIMath */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				6585D4E9309201D10044FC4B /* Textual in Frameworks */,
+				6585D4EB309201D10044FC4B /* SwiftUIMath in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 			name = tmp;
 			packageProductDependencies = (
 				6585D4E8309201D10044FC4B /* Textual */,
+				6585D4EA309201D10044FC4B /* SwiftUIMath */,
 			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* tmp.app */;
@@ -98,6 +101,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6585D4E7309201D10044FC4B /* XCRemoteSwiftPackageReference "textual" */,
+				6585D4EC309201D10044FC4B /* XCRemoteSwiftPackageReference "swiftui-math" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
@@ -362,6 +366,14 @@
 				minimumVersion = 0.5.0;
 			};
 		};
+		6585D4EC309201D10044FC4B /* XCRemoteSwiftPackageReference "swiftui-math" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swiftui-math";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -369,6 +381,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6585D4E7309201D10044FC4B /* XCRemoteSwiftPackageReference "textual" */;
 			productName = Textual;
+		};
+		6585D4EA309201D10044FC4B /* SwiftUIMath */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6585D4EC309201D10044FC4B /* XCRemoteSwiftPackageReference "swiftui-math" */;
+			productName = SwiftUIMath;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

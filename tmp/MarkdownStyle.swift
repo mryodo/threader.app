@@ -1,5 +1,10 @@
 import SwiftUI
+@_spi(Textual) import SwiftUIMath
 import Textual
+
+// TODO: probably need to move it to settings
+//
+let mathFace: MathProperties.FontName = .fira
 
 struct MarkdownView: View {
   let text: String
@@ -8,7 +13,14 @@ struct MarkdownView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       ForEach(Array(splitCallouts(text).enumerated()), id: \.offset) { _, b in
-        if let type = b.type {
+        if b.type == "MATH" {
+          ScrollView(.horizontal, showsIndicators: false) {
+            StructuredText(markdown: b.body, syntaxExtensions: [.math])
+              .threaderMarkdown(p)
+          }
+          .padding(14).frame(maxWidth: .infinity)
+          .background(RoundedRectangle(cornerRadius: 14).fill(p.mathBg))
+        } else if let type = b.type {
           let c = p.callout(type)
           VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 7) {
@@ -28,7 +40,8 @@ struct MarkdownView: View {
               .leading, 6)
           }
         } else {
-          StructuredText(markdown: b.body).threaderMarkdown(p)
+          StructuredText(markdown: inlineMath(b.body), syntaxExtensions: [.math])
+            .threaderMarkdown(p)
         }
       }
     }
@@ -50,7 +63,26 @@ func splitCallouts(_ md: String) -> [(type: String?, head: String, body: String)
   var i = 0
   while i < lines.count {
     let line = lines[i]
-    if line.trimmingCharacters(in: .whitespaces).hasPrefix("```") { fence.toggle() }
+    let t = line.trimmingCharacters(in: .whitespaces)
+    if !fence, t.hasPrefix("$$") || t == "```math" {
+      flush()
+      let close = t.hasPrefix("$$") ? "$$" : "```"
+      var src = [String(t.dropFirst(close == "$$" ? 2 : 7))]
+      while !src.last!.hasSuffix(close), i + 1 < lines.count {
+        i += 1
+        src.append(lines[i].trimmingCharacters(in: .whitespaces))
+      }
+      let body = src.joined(separator: " ")
+      out.append(
+        (
+          "MATH", "",
+          "$$" + (body.hasSuffix(close) ? String(body.dropLast(close.count)) : body)
+            + "$$"
+        ))
+      i += 1
+      continue
+    }
+    if t.hasPrefix("```") { fence.toggle() }
     if !fence, let m = line.wholeMatch(of: /\s*>\s*\[!(\w+)\][+-]?\s*(.*)/) {
       flush()
       var body: [String] = []
@@ -74,6 +106,70 @@ func splitCallouts(_ md: String) -> [(type: String?, head: String, body: String)
   }
   flush()
   return out
+}
+
+func inlineMath(_ md: String) -> String {
+  var fence = false
+  return md.components(separatedBy: "\n").map { line in
+    if line.trimmingCharacters(in: .whitespaces).hasPrefix("```") { fence.toggle() }
+    if fence || line.trimmingCharacters(in: .whitespaces).hasPrefix("```") { return line }
+    return line.replacing(/(`[^`]*`|\\\$|\$\$.+?\$\$)|\$([^$\s](?:[^$]*[^$\s])?)\$/) { m in
+      guard let src = m.output.2 else { return String(m.output.0) }
+      let enc = src.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+      return "![math](mathchip:\(enc))"
+    }
+  }.joined(separator: "\n")
+}
+
+struct MathChipLoader: AttachmentLoader {
+  let ink: Color, bg: Color, size: CGFloat
+
+  func attachment(for url: URL, text: String, environment: ColorEnvironmentValues)
+    async throws -> AnyAttachment
+  {
+    if url.scheme == "mathchip" {
+      let latex = String(url.absoluteString.dropFirst(9)).removingPercentEncoding ?? ""
+      return AnyAttachment(
+        MathChip(latex: latex, ink: ink, bg: bg, size: size) as any Textual.Attachment)
+    }
+    return try await load(.image(), url, text, environment)
+  }
+
+  private func load(
+    _ loader: some AttachmentLoader, _ url: URL, _ text: String, _ env: ColorEnvironmentValues
+  ) async throws -> AnyAttachment {
+    AnyAttachment(
+      try await loader.attachment(for: url, text: text, environment: env)
+        as any Textual.Attachment)
+  }
+}
+
+struct MathChip: Attachment {
+  let latex: String, ink: Color, bg: Color, size: CGFloat
+  static let pad = CGSize(width: 4, height: 1)
+
+  var description: String { "$\(latex)$" }
+  var selectionStyle: AttachmentSelectionStyle { .text }
+  var font: Math.Font { .init(name: .init(rawValue: mathFace.rawValue), size: size) }
+
+  var body: some View {
+    Math(latex).mathFont(font).mathTypesettingStyle(.text).foregroundStyle(ink)
+      .padding(.horizontal, Self.pad.width).padding(.vertical, Self.pad.height)
+      .background(RoundedRectangle(cornerRadius: 4).fill(bg))
+  }
+
+  func baselineOffset(in _: TextEnvironmentValues) -> CGFloat {
+    -bounds(.unspecified).descent - Self.pad.height
+  }
+
+  func sizeThatFits(_ proposal: ProposedViewSize, in _: TextEnvironmentValues) -> CGSize {
+    let s = bounds(proposal).size
+    return CGSize(width: s.width + 2 * Self.pad.width, height: s.height + 2 * Self.pad.height)
+  }
+
+  private func bounds(_ proposal: ProposedViewSize) -> Math.TypographicBounds {
+    Math.typographicBounds(for: latex, fitting: proposal, font: font, style: .text)
+  }
 }
 
 func calloutIcon(_ type: String) -> String {
@@ -105,6 +201,10 @@ extension View {
           .code(.font(face(14)), .backgroundColor(p.sunk))
           .strong(.font(face(15, .bold)))
           .link(.foregroundColor(p.accent), .underlineStyle(.single))
+      )
+      .textual.mathProperties(MathProperties(fontName: mathFace))
+      .textual.imageAttachmentLoader(
+        MathChipLoader(ink: p.ink, bg: p.mathBg, size: 15 * fontScale * 1.2)
       )
       .textual.headingStyle(Heading(p: p))
       .textual.unorderedListMarker(Bullet(p: p))
