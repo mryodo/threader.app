@@ -55,6 +55,21 @@ func linkify(_ md: String) -> String {
   }.joined(separator: "\n")
 }
 
+/// Follows the threader-link: and threader-tag: links that linkify makes.
+func followLinks(_ store: Store) -> OpenURLAction {
+  OpenURLAction { url in
+    let rest = url.absoluteString.drop { $0 != ":" }.dropFirst().removingPercentEncoding ?? ""
+    switch url.scheme {
+    case "threader-link":
+      // deferred so it runs after the card's own tap handler, which selects the clicked card
+      DispatchQueue.main.async { store.follow(rest) }
+    case "threader-tag": store.query = "#" + rest
+    default: return .systemAction
+    }
+    return .handled
+  }
+}
+
 extension Store {
   func toggleTheme() {
     setTheme(Palette.themes.first { $0.name == theme }?.pair ?? "sw1comm")
@@ -401,7 +416,10 @@ struct ThreadView: View {
     } label: {
       Image(systemName: "arrow.left.arrow.right")
     }
-    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+    #if os(macOS)
+    .menuStyle(.borderlessButton)
+    #endif
+    .menuIndicator(.hidden).fixedSize()
     .foregroundStyle(store.p.onCard.inkSoft)
     .tint(store.p.onCard.inkSoft)  // the borderless menu draws in the tint
     .help("Move to workspace")
@@ -436,6 +454,14 @@ struct NoteRow: View {
             MarkdownView(text: t.notes[j].body, p: p, dir: t.path.deletingLastPathComponent()) { l in
               store.change(t.path) { $0.notes[j].body = toggleTask($0.notes[j].body, l) }
             }
+            #if os(iOS)
+            if on {  // no keys on a phone: the selected post gets its buttons
+              HStack(spacing: 8) {
+                Button("Edit") { store.edit(at) }.buttonStyle(Pill(p: p, primary: true))
+                Button("Delete", role: .destructive) { store.deleteNote(at) }.buttonStyle(Pill(p: p))
+              }
+            }
+            #endif
           }
         } else {
           Caps(text: "New post", color: p.accent)
@@ -526,8 +552,8 @@ struct ImageRow: View {
         ProgressView()
       }
       .frame(maxWidth: .infinity, maxHeight: 420, alignment: .leading)
-    } else if let img = NSImage(contentsOf: resolve()) {
-      Image(nsImage: img).resizable().scaledToFit().clipShape(shape)
+    } else if let img = loadImage(resolve()) {
+      image(img).resizable().scaledToFit().clipShape(shape)
         .frame(maxWidth: min(img.size.width, .infinity), maxHeight: 420, alignment: .leading)
     } else {
       Caps(text: "image not found · \(alt.isEmpty ? src : alt)", color: p.red)
@@ -542,6 +568,14 @@ struct ImageRow: View {
     return (dir ?? URL(fileURLWithPath: NSHomeDirectory())).appendingPathComponent(s)
   }
 }
+
+#if os(macOS)
+func loadImage(_ u: URL) -> NSImage? { NSImage(contentsOf: u) }
+func image(_ i: NSImage) -> Image { Image(nsImage: i) }
+#else
+func loadImage(_ u: URL) -> UIImage? { UIImage(contentsOfFile: u.path) }
+func image(_ i: UIImage) -> Image { Image(uiImage: i) }
+#endif
 
 /// s with the task line l, as drawn (a callout's "> " gone), ticked or unticked.
 func toggleTask(_ s: String, _ l: String) -> String {
@@ -579,7 +613,9 @@ struct TaskRow: View {
           .foregroundStyle(p.teal)
       }
       .buttonStyle(.plain).disabled(toggle == nil)
+      #if os(macOS)
       .pointerStyle(toggle != nil ? .link : nil)
+      #endif
       StructuredText(
         markdown: inlineMath(linkify(done ? "~~\(text)~~" : text)), syntaxExtensions: [.math]
       )

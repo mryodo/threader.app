@@ -19,6 +19,7 @@ struct MarkdownFileView: View {
   }
 }
 
+#if os(macOS)
 struct ContentView: View {
 
   @Environment(Store.self) var store
@@ -66,19 +67,7 @@ struct ContentView: View {
     // on the whole window, so the keys work with the sidebar focused too
     .onKeyPress(action: keys)
     .id("\(store.fontSize) \(store.fontFamily) \(store.fontStyle) \(store.boldStyle) \(store.mathFont) \(store.lineSpacing) \(store.theme) \(store.preambleVersion)")  // read when views are built
-    .environment(
-      \.openURL,
-      OpenURLAction { url in
-        let rest = url.absoluteString.drop { $0 != ":" }.dropFirst().removingPercentEncoding ?? ""
-        switch url.scheme {
-        case "threader-link":
-          // deferred so it runs after the card's own tap handler, which selects the clicked card
-          DispatchQueue.main.async { store.follow(rest) }
-        case "threader-tag": store.query = "#" + rest
-        default: return .systemAction
-        }
-        return .handled
-      })
+    .environment(\.openURL, followLinks(store))
     .preferredColorScheme(store.light ? .light : .dark)
     .tint(store.p.accent)
     .onReceive(
@@ -316,3 +305,4 @@ struct Sidebar: View {
     .listRowInsets(EdgeInsets(top: 1, leading: 4, bottom: 1, trailing: 4))
   }
 }
+#endif

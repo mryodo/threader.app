@@ -83,6 +83,9 @@ for n in [16, 32, 128, 256, 512] {
       #"{ "idiom" : "mac", "scale" : "\#(scale)x", "size" : "\#(n)x\#(n)", "filename" : "\#(name)" }"#)
   }
 }
+// the iPhone takes the 1024 one, which is 512@2x
+images.append(
+  #"{ "idiom" : "universal", "platform" : "ios", "size" : "1024x1024", "filename" : "icon_512x512@2x.png" }"#)
 try! """
   { "images" : [
   \(images.joined(separator: ",\n"))

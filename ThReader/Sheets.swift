@@ -1,7 +1,9 @@
-import AppKit
 import SwiftUI
 import SwiftUIMath
 import Textual
+#if os(macOS)
+import AppKit
+#endif
 
 struct SheetFrame<Content: View>: View {
   @Environment(Store.self) var store
@@ -19,7 +21,9 @@ struct SheetFrame<Content: View>: View {
       content
     }
     .padding(28)
+    #if os(macOS)
     .frame(width: 460)
+    #endif
     .background(p.paper)
   }
 }
@@ -70,6 +74,7 @@ struct NameSheet: View {
   }
 }
 
+#if os(macOS)
 struct FolderSheet: View {
   @Environment(Store.self) var store
   @State var path = ""
@@ -492,3 +497,4 @@ struct Help: View {
     .onAppear { focus = true }
   }
 }
+#endif

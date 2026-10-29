@@ -1,5 +1,9 @@
-import AppKit
 import SwiftUI
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 struct Palette {
   var paper, raised, sunk, line, ink, inkSoft, accent, amber, teal, red, purple, yellow, button,
@@ -97,9 +101,9 @@ struct Palette {
   /// On dark themes the page, not sunk: a card's sunk is see-through white,
   /// which would make the math light.
   var mathBg: Color {
-    let dark = (NSColor(paper).usingColorSpace(.sRGB)?.brightnessComponent ?? 1) < 0.5
-    let base = NSColor(dark ? paper : sunk)
-    return Color(base.blended(withFraction: 0.15, of: NSColor(accent)) ?? base)
+    let r = paper.resolve(in: EnvironmentValues())  // linear, but every paper is far from the middle
+    let dark = max(r.red, r.green, r.blue) < 0.5
+    return (dark ? paper : sunk).mix(with: accent, by: 0.15, in: .device)
   }
 
   func callout(_ type: String) -> Color {
@@ -129,7 +133,11 @@ func registerFonts() {
   CTFontManagerRegisterFontURLs(urls as CFArray, .process, true, nil)
 }
 
+#if os(macOS)
 let installed = Set(NSFontManager.shared.availableFontFamilies)
+#else
+let installed = Set(UIFont.familyNames)
+#endif
 
 var fontScale: CGFloat = 1
 var lineGap: CGFloat = 0.08  // extra space between lines, in ems
@@ -137,6 +145,16 @@ var fontName = "Maple Mono"
 var regularFace: String?
 var boldFace: String?  // the face for .bold, from settings
 
+#if os(iOS)
+func fontStyles(_ family: String) -> [(style: String, face: String)] {
+  UIFont.fontNames(forFamilyName: family).compactMap { face in
+    guard let d = UIFont(name: face, size: 12)?.fontDescriptor,
+      !d.symbolicTraits.contains(.traitItalic)
+    else { return nil }
+    return (d.object(forKey: .face) as? String ?? face, face)
+  }
+}
+#else
 func fontStyles(_ family: String) -> [(style: String, face: String)] {
   (NSFontManager.shared.availableMembers(ofFontFamily: family) ?? []).compactMap { m in
     guard m.count >= 4, let face = m[0] as? String, let style = m[1] as? String,
@@ -160,6 +178,7 @@ func linePara() -> NSParagraphStyle {
   ps.lineSpacing = lineGap * 15 * fontScale
   return ps
 }
+#endif
 
 func font(_ family: String, _ size: CGFloat, _ w: Font.Weight) -> Font {
   let size = size * fontScale

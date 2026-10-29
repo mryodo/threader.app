@@ -318,8 +318,10 @@ struct LinkCursor: ViewModifier {
       .onContinuousHover { phase in
         var on = false
         if case .active(let at) = phase { on = rects.contains { $0.contains(at) } }
+        #if os(macOS)
         if on, !pushed { NSCursor.pointingHand.push() }
         if !on, pushed { NSCursor.pop() }
+        #endif
         pushed = on
       }
   }

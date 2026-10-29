@@ -167,8 +167,12 @@ func writeThread(_ t: Thread) -> String {
   }
 
   static var askRoot: Bool {
+    #if os(iOS)
+    false  // the app's own Documents folder, seen in Files
+    #else
     ProcessInfo.processInfo.environment["THREADER_DIR"] == nil
       && UserDefaults.standard.string(forKey: "root") == nil
+    #endif
   }
   func applyStyle() {
     regularFace = fontStyles(fontFamily).first { $0.style == fontStyle }?.face
@@ -233,6 +237,15 @@ func writeThread(_ t: Thread) -> String {
     let files =
       (try? FileManager.default.contentsOfDirectory(
         at: dir, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
+    #if os(iOS)
+    // iCloud Drive leaves .name.md.icloud stand-ins for files not yet on the
+    // phone; ask for them, and they show up on a later reload
+    for f in files where f.lastPathComponent.hasSuffix(".md.icloud") {
+      let name = f.deletingPathExtension().lastPathComponent.dropFirst()
+      try? FileManager.default.startDownloadingUbiquitousItem(
+        at: f.deletingLastPathComponent().appendingPathComponent(String(name)))
+    }
+    #endif
     threads = files.filter { $0.pathExtension == "md" }.compactMap { f in
       guard var t = loadThread(f.path) else { return nil }
       t.pinned = pins.contains(f.lastPathComponent)
@@ -264,12 +277,16 @@ func writeThread(_ t: Thread) -> String {
   }
 
   init() {
+    #if os(iOS)
+    root = Store.pickedRoot() ?? URL.documentsDirectory
+    #else
     let saved =
       ProcessInfo.processInfo.environment["THREADER_DIR"]
       ?? UserDefaults.standard.string(forKey: "root")
     root =
       saved.map { URL(fileURLWithPath: $0) }
       ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("threads")
+    #endif
     fontScale = fontSize / 15
     lineGap = lineSpacing
     fontName = fontFamily
@@ -284,6 +301,32 @@ func writeThread(_ t: Thread) -> String {
       candidates.first { name in Palette.themes.contains { $0.name == name } } ?? "ayugloom"
     open(root)
   }
+
+  #if os(iOS)
+  /// The folder picked in Files (an iCloud Drive one syncs with the Mac),
+  /// kept as a bookmark: on iOS its path alone doesn't grant access.
+  static func pickedRoot() -> URL? {
+    guard let d = UserDefaults.standard.data(forKey: "rootBookmark") else { return nil }
+    var stale = false
+    guard let u = try? URL(resolvingBookmarkData: d, bookmarkDataIsStale: &stale),
+      u.startAccessingSecurityScopedResource()  // held for as long as the app runs
+    else { return nil }
+    if stale, let fresh = try? u.bookmarkData() {
+      UserDefaults.standard.set(fresh, forKey: "rootBookmark")
+    }
+    return u
+  }
+
+  func pickRoot(_ u: URL) {
+    guard u.startAccessingSecurityScopedResource(), let d = try? u.bookmarkData() else {
+      error = "can't open \(u.lastPathComponent)"
+      return
+    }
+    root.stopAccessingSecurityScopedResource()  // the old folder's
+    UserDefaults.standard.set(d, forKey: "rootBookmark")
+    setRoot(u)
+  }
+  #endif
 
   func open(_ u: URL) {
     root = u

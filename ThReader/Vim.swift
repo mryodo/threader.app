@@ -1,4 +1,9 @@
+import Foundation
+#if os(macOS)
 import AppKit
+#else
+import UIKit
+#endif
 import Observation
 
 enum Key: Equatable {
@@ -337,8 +342,12 @@ enum Act { case stay, write, save, discard }  // after a key: nothing, :w, :wq, 
     }
     if op == "y" {
       // yanks also go to the system clipboard; deletes stay in vim's register
+      #if os(macOS)
       NSPasteboard.general.clearContents()
       NSPasteboard.general.setString(String(reg) + (linewise ? "\n" : ""), forType: .string)
+      #else
+      UIPasteboard.general.string = String(reg) + (linewise ? "\n" : "")
+      #endif
       cur = a
       clamp()
       return

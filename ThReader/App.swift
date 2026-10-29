@@ -1,7 +1,9 @@
 import Foundation
 import Playgrounds
-import AppKit
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
 @main struct MyApp: App {
   @State private var store: Store
@@ -11,6 +13,11 @@ import SwiftUI
     _store = State(initialValue: Store())
   }
 
+  #if os(iOS)
+  var body: some Scene {
+    WindowGroup { PhoneView().environment(store) }
+  }
+  #else
   var body: some Scene {
     WindowGroup {
       ContentView().environment(store)
@@ -61,7 +68,10 @@ import SwiftUI
       .windowStyle(.hiddenTitleBar)
       .windowResizability(.contentSize)
   }
+  #endif
 }
+
+#if os(macOS)
 
 /// Makes the window see-through (clear) with the desktop behind blurred.
 /// SwiftUI has no API for either; the title bar is left to .windowStyle.
@@ -108,3 +118,4 @@ struct SettingsButton: View {
   @Environment(\.openWindow) var openWindow
   var body: some View { Button("Settings…") { openWindow(id: "settings") }.keyboardShortcut(",") }
 }
+#endif

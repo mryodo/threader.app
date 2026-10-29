@@ -1,7 +1,8 @@
 // The editor: an NSTextView that only displays, with every key run through
 // Vim. Esc in normal mode saves and closes, as in the terminal app.
-import AppKit
 import SwiftUI
+#if os(macOS)
+import AppKit
 
 struct Editor: View {
   @Environment(Store.self) var store
@@ -330,6 +331,8 @@ final class VimTextView: NSTextView {
     return n
   }
 }
+
+#endif
 
 /// Shows the commands matching the \\name, or the threads
 /// and posts matching the [[link, being typed.

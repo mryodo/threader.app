@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		6585D4E9309201D10044FC4B /* Textual in Frameworks */ = {isa = PBXBuildFile; productRef = 6585D4E8309201D10044FC4B /* Textual */; };
 		6585D4EB309201D10044FC4B /* SwiftUIMath in Frameworks */ = {isa = PBXBuildFile; productRef = 6585D4EA309201D10044FC4B /* SwiftUIMath */; };
+		A1000000000000000000B001 /* Runestone in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = A1000000000000000000C001 /* Runestone */; };
+		A1000000000000000000B002 /* TreeSitterMarkdownRunestone in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = A1000000000000000000C002 /* TreeSitterMarkdownRunestone */; };
+		A1000000000000000000B003 /* TreeSitterMarkdownInlineRunestone in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = A1000000000000000000C003 /* TreeSitterMarkdownInlineRunestone */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +32,9 @@
 			files = (
 				6585D4E9309201D10044FC4B /* Textual in Frameworks */,
 				6585D4EB309201D10044FC4B /* SwiftUIMath in Frameworks */,
+				A1000000000000000000B001 /* Runestone in Frameworks */,
+				A1000000000000000000B002 /* TreeSitterMarkdownRunestone in Frameworks */,
+				A1000000000000000000B003 /* TreeSitterMarkdownInlineRunestone in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -70,6 +76,9 @@
 			packageProductDependencies = (
 				6585D4E8309201D10044FC4B /* Textual */,
 				6585D4EA309201D10044FC4B /* SwiftUIMath */,
+				A1000000000000000000C001 /* Runestone */,
+				A1000000000000000000C002 /* TreeSitterMarkdownRunestone */,
+				A1000000000000000000C003 /* TreeSitterMarkdownInlineRunestone */,
 			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* ThReader.app */;
@@ -102,6 +111,8 @@
 			packageReferences = (
 				6585D4E7309201D10044FC4B /* XCRemoteSwiftPackageReference "textual" */,
 				6585D4EC309201D10044FC4B /* XCRemoteSwiftPackageReference "swiftui-math" */,
+				A1000000000000000000D001 /* XCRemoteSwiftPackageReference "Runestone" */,
+				A1000000000000000000D002 /* XCRemoteSwiftPackageReference "TreeSitterLanguages" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
@@ -276,6 +287,10 @@
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
@@ -314,6 +329,10 @@
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
@@ -376,6 +395,22 @@
 				minimumVersion = 0.1.0;
 			};
 		};
+		A1000000000000000000D001 /* XCRemoteSwiftPackageReference "Runestone" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simonbs/Runestone";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.5.2;
+			};
+		};
+		A1000000000000000000D002 /* XCRemoteSwiftPackageReference "TreeSitterLanguages" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simonbs/TreeSitterLanguages";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.9;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -388,6 +423,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6585D4EC309201D10044FC4B /* XCRemoteSwiftPackageReference "swiftui-math" */;
 			productName = SwiftUIMath;
+		};
+		A1000000000000000000C001 /* Runestone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1000000000000000000D001 /* XCRemoteSwiftPackageReference "Runestone" */;
+			productName = Runestone;
+		};
+		A1000000000000000000C002 /* TreeSitterMarkdownRunestone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1000000000000000000D002 /* XCRemoteSwiftPackageReference "TreeSitterLanguages" */;
+			productName = TreeSitterMarkdownRunestone;
+		};
+		A1000000000000000000C003 /* TreeSitterMarkdownInlineRunestone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1000000000000000000D002 /* XCRemoteSwiftPackageReference "TreeSitterLanguages" */;
+			productName = TreeSitterMarkdownInlineRunestone;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
