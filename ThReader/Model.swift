@@ -75,6 +75,7 @@ func writeThread(_ t: Thread) -> String {
     }
   }
 
+  var jump: Pos?  // where a followed link went, for the phone to scroll to
   var editing: Pos?  // the card or note being edited
   var adding: URL?  // the thread a new note is being written for
   var draft = ""
@@ -253,6 +254,9 @@ func writeThread(_ t: Thread) -> String {
     }
     // pinned first, then the most recently changed
     threads.sort { $0.pinned != $1.pinned ? $0.pinned : $0.mtime > $1.mtime }
+    #if os(iOS)
+    shareWithWidget()
+    #endif
   }
   func pinned() -> Set<String> {
     let text = read(dir.appendingPathComponent(Store.pinFile)) ?? ""

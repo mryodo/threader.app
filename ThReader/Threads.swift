@@ -171,6 +171,7 @@ extension Store {
     query = ""
     unfolded.insert(t.path)
     sel = Pos(path: t.path, note: max(n - 1, -1))
+    jump = sel
   }
 
   /// Saves the open editor and keeps it open (⌘S).
@@ -396,7 +397,8 @@ struct ThreadView: View {
           glass: store.cardsGlass, tint: store.glassTint)
       )
       .contentShape(Rectangle())
-      .onTapGesture { store.sel = card }
+      .onTapGesture(perform: tap)
+      .environment(\.tapText, tap)
       .id(card)
 
       ForEach(open ? notes : [], id: \.self) { j in
@@ -404,6 +406,14 @@ struct ThreadView: View {
       }
       if adding { NoteRow(t: t, j: nil, last: true) }
     }
+  }
+
+  /// Selects the card and, on a phone, folds or unfolds it.
+  func tap() {
+    store.sel = Pos(path: t.path, note: -1)
+    #if os(iOS)
+    store.unfolded.formSymmetricDifference([t.path])
+    #endif
   }
 
   var moveMenu: some View {
@@ -454,14 +464,6 @@ struct NoteRow: View {
             MarkdownView(text: t.notes[j].body, p: p, dir: t.path.deletingLastPathComponent()) { l in
               store.change(t.path) { $0.notes[j].body = toggleTask($0.notes[j].body, l) }
             }
-            #if os(iOS)
-            if on {  // no keys on a phone: the selected post gets its buttons
-              HStack(spacing: 8) {
-                Button("Edit") { store.edit(at) }.buttonStyle(Pill(p: p, primary: true))
-                Button("Delete", role: .destructive) { store.deleteNote(at) }.buttonStyle(Pill(p: p))
-              }
-            }
-            #endif
           }
         } else {
           Caps(text: "New post", color: p.accent)
@@ -471,10 +473,24 @@ struct NoteRow: View {
       .padding(.horizontal, 14).padding(.vertical, 10)
       // the selected post sits on a soft accent panel
       .background(RoundedRectangle(cornerRadius: 16).fill(on ? p.accent.opacity(0.08) : .clear))
+      #if os(iOS)
+      .overlay(alignment: .topTrailing) {  // no keys on a phone; delete is in the long-press menu
+        if on, j != nil, store.editing != at {
+          Button { store.edit(at) } label: {
+            Image(systemName: "pencil").font(.system(size: 14, weight: .semibold))
+              .foregroundStyle(p.ink).frame(width: 34, height: 34)
+          }
+          .buttonStyle(.plain).glassEffect(.regular.interactive(), in: .circle).padding(6)
+        }
+      }
+      #endif
       .animation(.easeOut(duration: 0.12), value: on)
       .contentShape(Rectangle())
+      #if os(macOS)  // on a phone it would hold up every single tap; there's an Edit button
       .onTapGesture(count: 2) { if j != nil { store.edit(at) } }
+      #endif
       .onTapGesture { if j != nil { store.sel = at } }
+      .environment(\.tapText) { if j != nil { store.sel = at } }
       .contextMenu {
         if j != nil {
           Button("Edit") { store.edit(at) }

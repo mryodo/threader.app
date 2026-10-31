@@ -81,8 +81,8 @@ struct Palette {
     teal: Color(hex: 0x008064), red: Color(hex: 0x870600), purple: Color(hex: 0x71468e),
     yellow: Color(hex: 0x6c5c00),
     button: Color(hex: 0x006699), onButton: Color(hex: 0xf9f0db),
-    card: Color(hex: 0xc6e8ff), cardInk: Color(hex: 0x34394a), cardAccent: Color(hex: 0x006699),
-    cardTitle: Color(hex: 0x835200))
+    card: Color(hex: 0x006699), cardInk: Color(hex: 0xf9f0db), cardAccent: Color(hex: 0xa1ddff),
+    cardTitle: Color(hex: 0xfcc9a0))
 
   var onCard: Palette {
     var c = self

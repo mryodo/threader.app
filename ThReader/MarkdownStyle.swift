@@ -11,7 +11,12 @@ let mathFaces: [(name: String, face: MathProperties.FontName)] = [
   ("Noto Sans", .notoSans), ("Lete Sans", .leteSans),
 ]
 
+extension EnvironmentValues {
+  @Entry var tapText: (() -> Void)? = nil  // what a tap on the text does besides following links
+}
+
 struct MarkdownView: View {
+  @Environment(\.tapText) var tapText
   let text: String
   let p: Palette
   var dir: URL? = nil  // the thread's folder, for images by relative path
@@ -60,6 +65,10 @@ struct MarkdownView: View {
                   syntaxExtensions: [.math]
                 )
                 .threaderMarkdown(p)
+                .modifier(RedrawOnReturn())
+                // Textual's link tapping takes every tap on the text, so the
+                // card or post behind it would only hear taps between lines
+                .simultaneousGesture(TapGesture().onEnded { tapText?() })
               }
             }
           }
@@ -67,6 +76,25 @@ struct MarkdownView: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+/// iOS loses Textual's inline math, drawn on a Canvas, once the text
+/// scrolls off screen; rebuilding the text when it scrolls back redraws it.
+// ponytail: rebuilds every paragraph on each return; skip ones without $ if scrolling stutters
+struct RedrawOnReturn: ViewModifier {
+  @State var n = 0
+  @State var seen = false
+
+  func body(content: Content) -> some View {
+    #if os(iOS)
+    content.id(n).onScrollVisibilityChange { visible in
+      if visible, seen { n += 1 }
+      seen = seen || visible
+    }
+    #else
+    content
+    #endif
   }
 }
 
